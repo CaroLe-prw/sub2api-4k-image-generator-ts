@@ -1,95 +1,99 @@
+<p align="right">
+  <a href="README.en.md"><img alt="English README" src="https://img.shields.io/badge/English-README-blue"></a>
+</p>
+
 # sub2api 4K Image Generator TS Skill
 
 [![skills.sh](https://skills.sh/b/fengyunzaidushi/sub2api-4k-image-generator-ts)](https://skills.sh/fengyunzaidushi/sub2api-4k-image-generator-ts)
 
-A Codex-compatible agent skill and TypeScript CLI for generating, streaming, saving, and debugging high-resolution AI images through a sub2api OpenAI-compatible endpoint.
+这是一个 Codex 可用的 agent skill，同时也是一个 TypeScript CLI，用来通过 sub2api 的 OpenAI-compatible endpoint 生成、流式接收、保存和调试高分辨率 AI 图片。
 
-Use it when you need a local `SUB2API_BASE_URL` / `SUB2API_API_KEY` based image workflow for `/v1/images/generations` or `/v1/responses`, especially 4K outputs such as `3840x2160` and `2160x3840`, streaming partial-image diagnostics, and Cloudflare 524 timeout troubleshooting.
+当你需要基于本地 `SUB2API_BASE_URL` / `SUB2API_API_KEY` 调用 `/v1/images/generations` 或 `/v1/responses` 时可以使用它，尤其适合 `3840x2160`、`2160x3840` 这类 4K 输出、streaming partial-image 诊断，以及 Cloudflare 524 timeout 排查。
 
-## Install
+## 安装
 
-Install the current skill for Codex:
+只安装当前 skill 到 Codex：
 
 ```bash
 npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex
 ```
 
-A correct install should create a skill directory containing `SKILL.md`, `dist/`, `scripts/`, and `package.json`. If you only see `SKILL.md`, you installed an older root-level layout; refresh with the update command below.
+正确安装后，skill 目录里应该包含 `SKILL.md`、`dist/`、`scripts/` 和 `package.json`。如果你只看到 `SKILL.md`，说明安装到了旧的 root-level layout，请使用下面的更新命令刷新。
 
-Install for all detected agents:
+安装到所有检测到的 agent：
 
 ```bash
 npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts
 ```
 
-List the skill detected in this repository without installing it:
+只查看仓库中可被检测到的 skill，不安装：
 
 ```bash
 npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --list
 ```
 
-Use the skill prompt without installing:
+不安装，直接生成使用该 skill 的 prompt：
 
 ```bash
 npx skills use fengyunzaidushi/sub2api-4k-image-generator-ts@sub2api-4k-image-generator-ts
 ```
 
-## Update
+## 更新
 
-Recommended way to refresh the Codex install:
+推荐刷新 Codex 安装：
 
 ```bash
 npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -y --copy
 ```
 
-Refresh all detected agents:
+刷新所有检测到的 agent：
 
 ```bash
 npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts --all --copy
 ```
 
-Why this uses `skills add` instead of `skills update`:
+为什么这里使用 `skills add` 而不是 `skills update`：
 
-`npx skills update sub2api-4k-image-generator-ts -p -y` may fail with `Failed to check for deleted skills` or `Failed to update`. In that case, run the recommended `skills add ... -y --copy` command above to overwrite the installed copy with the latest repository version.
+`npx skills update sub2api-4k-image-generator-ts -p -y` 可能会出现 `Failed to check for deleted skills` 或 `Failed to update`。遇到这种情况时，使用上面的 `skills add ... -y --copy` 命令覆盖刷新到仓库最新版本。
 
-## Use
+## 使用
 
-Example prompt after installation:
+安装后的示例提示词：
 
 ```text
-Use $sub2api-4k-image-generator-ts to generate a 4K landscape image through my sub2api endpoint and save the final image path.
+使用 $sub2api-4k-image-generator-ts 通过我的 sub2api endpoint 生成一张 4K 横图，并返回最终保存的图片路径。
 ```
 
-The skill will:
+这个 skill 会：
 
-- inspect the local `.env` or process environment for `SUB2API_BASE_URL` and `SUB2API_API_KEY`
-- generate explicit 4K payloads for `3840x2160` or `2160x3840`
-- prefer streaming requests so slow 4K jobs can avoid Cloudflare 524 failures
-- capture final images and partial diagnostic images from SSE events
-- support both `/v1/images/generations` and `/v1/responses`
-- report saved image paths and diagnostics without printing full API keys
+- 检查本地 `.env` 或 process environment 中的 `SUB2API_BASE_URL` 和 `SUB2API_API_KEY`
+- 为 `3840x2160` 或 `2160x3840` 生成明确的 4K payload
+- 默认使用 streaming request，降低慢速 4K 任务遇到 Cloudflare 524 的概率
+- 从 SSE event 中捕获 final image 和 partial diagnostic image
+- 支持 `/v1/images/generations` 和 `/v1/responses`
+- 返回保存的图片路径和诊断信息，同时不会打印完整 API key
 
-## CLI Setup
+## CLI 设置
 
-Create or update `.env` where you run the CLI:
+在运行 CLI 的目录创建或更新 `.env`：
 
 ```env
 SUB2API_BASE_URL=https://your-sub2api.example.com
 SUB2API_API_KEY=sk-...
 ```
 
-Replace `https://your-sub2api.example.com` with your own deployed sub2api domain. You can also override it per command with `--base-url https://your-sub2api.example.com`.
+把 `https://your-sub2api.example.com` 替换成你自己的 sub2api 部署域名。也可以在命令里用 `--base-url https://your-sub2api.example.com` 覆盖。
 
-Install dependencies for development:
+开发时安装依赖：
 
 ```powershell
 cd .\sub2api-4k-image-generator-ts
 npm install
 ```
 
-## CLI Run
+## CLI 运行
 
-Preferred compiled JavaScript:
+优先使用已编译的 JavaScript：
 
 ```powershell
 node .\dist\openai_4k_image_generator.js `
@@ -99,7 +103,7 @@ node .\dist\openai_4k_image_generator.js `
   --output-dir output
 ```
 
-TypeScript source:
+也可以直接运行 TypeScript source：
 
 ```powershell
 npx tsx .\scripts\openai_4k_image_generator.ts `
@@ -109,27 +113,62 @@ npx tsx .\scripts\openai_4k_image_generator.ts `
   --output-dir output
 ```
 
-Dry run:
+Dry run：
 
 ```powershell
 npm run dry-run
 ```
 
-## CLI Options
+## Python 请求脚本
 
-- `--size 3840x2160` for landscape 4K
-- `--size 2160x3840` for portrait 4K
-- `--endpoint images` for `/v1/images/generations`
-- `--endpoint responses` for `/v1/responses`
-- `--input-image ./input.png` with `--endpoint responses`
-- `--no-stream` to debug non-streaming behavior
-- `--dry-run` to print URL and JSON body without sending
+仓库还包含一个独立的 Python 请求脚本：
 
-## Repository Layout
+```powershell
+python .\openai_4k_image_request.py `
+  "cinematic xianxia sword immortal, sea of clouds, glowing sword, no text, no watermark" `
+  --size 3840x2160 `
+  --quality high `
+  --output-dir output
+```
+
+这个脚本适合在不想进入 Node/TypeScript 工具链时，直接发起 sub2api/OpenAI-compatible 图片生成请求。它会读取 `.env` 中的 `SUB2API_BASE_URL`、`SUB2API_API_KEY` 和 `SUB2API_USER_AGENT`，默认使用 `gpt-image-2`、`3840x2160`、`stream=true` 和 `partial_images=1`。
+
+Python 脚本支持：
+
+- `/v1/images/generations`：默认 endpoint
+- `/v1/responses`：通过 `--endpoint responses` 启用
+- `--input-image ./input.png`：在 Responses API 中附带本地图片、URL 或 data URL
+- streaming SSE：解析 final image 和 partial image event
+- `--dry-run`：只打印 URL 和 JSON body，不发送请求
+
+首次使用前安装 Python 依赖：
+
+```powershell
+pip install python-dotenv
+```
+
+Dry run 示例：
+
+```powershell
+python .\openai_4k_image_request.py "test prompt" --dry-run
+```
+
+## CLI 选项
+
+- `--size 3840x2160`：横向 4K
+- `--size 2160x3840`：纵向 4K
+- `--endpoint images`：使用 `/v1/images/generations`
+- `--endpoint responses`：使用 `/v1/responses`
+- `--input-image ./input.png`：配合 `--endpoint responses` 使用 input image
+- `--no-stream`：调试 non-streaming 行为
+- `--dry-run`：只打印 URL 和 JSON body，不发送请求
+
+## 仓库结构
 
 ```text
 .
 ├── README.md
+├── README.en.md
 ├── LICENSE
 └── sub2api-4k-image-generator-ts/
     ├── SKILL.md
@@ -138,6 +177,7 @@ npm run dry-run
     ├── package.json
     ├── package-lock.json
     ├── tsconfig.json
+    ├── openai_4k_image_request.py
     ├── scripts/
     │   ├── openai_4k_image_generator.ts # thin executable entrypoint
     │   ├── cli.ts                       # command orchestration
@@ -154,41 +194,41 @@ npm run dry-run
         └── openai_4k_image_generator.js
 ```
 
-## Validate
+## 校验
 
-From a repository checkout, enter the skill directory first:
+从仓库 checkout 中先进入 skill 目录：
 
 ```powershell
 cd .\sub2api-4k-image-generator-ts
 ```
 
-Run the local test suite:
+运行本地测试：
 
 ```powershell
 npm test
 ```
 
-Build the compiled CLI:
+构建已编译 CLI：
 
 ```powershell
 npm run build
 ```
 
-Check `skills.sh` / `npx skills` repository detection:
+检查 `skills.sh` / `npx skills` 是否能检测到仓库中的 skill：
 
 ```bash
 npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --list
 ```
 
-## Diagnostics
+## 诊断
 
-- `1010`: Cloudflare blocked the request before it reached sub2api. Add or adjust WAF Skip rules for `/v1/*`.
-- `524`: The request reached the origin but did not complete fast enough. Keep streaming enabled and check server-side keepalive behavior.
-- `partial image received`: The stream is alive and upstream generation started.
-- `*-partial-XX.png`: Partial diagnostic image. It is not the final 4K output.
-- `<prefix>-XX.png`: Final saved image.
+- `1010`：请求到达 sub2api 前被 Cloudflare 拦截。为 `/v1/*` 添加或调整 WAF Skip rule。
+- `524`：请求已到达 origin，但没有在限定时间内完成。保持 streaming 开启，并检查服务端 keepalive。
+- `partial image received`：stream 仍然存活，上游图片生成已经开始。
+- `*-partial-XX.png`：partial diagnostic image，不是最终 4K 输出。
+- `<prefix>-XX.png`：最终保存的图片。
 
-## Development
+## 开发
 
 ```powershell
 cd .\sub2api-4k-image-generator-ts
@@ -196,7 +236,7 @@ npm test
 npm run build
 ```
 
-The tests cover argument defaults, payload construction, URL selection, final image SSE extraction, partial image SSE extraction, response summaries, and API key masking.
+测试覆盖 argument defaults、payload construction、URL selection、final image SSE extraction、partial image SSE extraction、response summaries 和 API key masking。
 
 ## Topics
 

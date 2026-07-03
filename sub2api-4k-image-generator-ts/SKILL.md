@@ -33,7 +33,15 @@ node .\dist\openai_4k_image_generator.js `
 npx tsx .\scripts\openai_4k_image_generator.ts "test prompt" --dry-run
 ```
 
-5. Report final image paths, partial image paths, and any Cloudflare/SSE diagnostic in plain language. Never print full API keys.
+5. If Node/TypeScript is inconvenient, use the bundled Python request script:
+
+```powershell
+python .\openai_4k_image_request.py "test prompt" --dry-run
+```
+
+Install `python-dotenv` first if Python reports that `dotenv` is missing.
+
+6. Report final image paths, partial image paths, and any Cloudflare/SSE diagnostic in plain language. Never print full API keys.
 
 ## Notes
 
@@ -41,5 +49,6 @@ npx tsx .\scripts\openai_4k_image_generator.ts "test prompt" --dry-run
 - Treat 4K as explicit pixel sizes: `3840x2160` or `2160x3840`.
 - Streaming is enabled by default to avoid Cloudflare 524 during slow 4K generation.
 - `*-partial-XX.png` files are diagnostics only; final images are saved as `<prefix>-XX.png`.
+- `openai_4k_image_request.py` is a standalone Python fallback that supports `/v1/images/generations`, `/v1/responses`, `--input-image`, streaming SSE, and `--dry-run`.
 - Run `npm test` after editing the skill.
 - The bundled `dist/` directory is enough for normal use; use `scripts/` only for development or debugging.
