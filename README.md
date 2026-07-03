@@ -14,6 +14,8 @@ Install the current skill for Codex:
 npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex
 ```
 
+A correct install should create a skill directory containing `SKILL.md`, `dist/`, `scripts/`, and `package.json`. If you only see `SKILL.md`, you installed an older root-level layout; refresh with the update command below.
+
 Install for all detected agents:
 
 ```bash
@@ -81,6 +83,7 @@ Replace `https://your-sub2api.example.com` with your own deployed sub2api domain
 Install dependencies for development:
 
 ```powershell
+cd .\sub2api-4k-image-generator-ts
 npm install
 ```
 
@@ -126,29 +129,38 @@ npm run dry-run
 
 ```text
 .
-├── SKILL.md
 ├── README.md
-├── agents/
-│   └── openai.yaml
-├── package.json
-├── tsconfig.json
-├── scripts/
-│   ├── openai_4k_image_generator.ts # thin executable entrypoint
-│   ├── cli.ts                       # command orchestration
-│   ├── args.ts                      # CLI parsing and defaults
-│   ├── env.ts                       # .env loading and key masking
-│   ├── payload.ts                   # /images and /responses payload builders
-│   ├── request.ts                   # JSON and SSE HTTP requests
-│   ├── sse.ts                       # OpenAI image stream event parsing
-│   ├── save.ts                      # final and partial image saving
-│   ├── types.ts                     # shared types
-│   ├── errors.ts                    # typed CLI errors
-│   └── test.ts                      # local unit tests
-└── dist/
-    └── openai_4k_image_generator.js
+├── LICENSE
+└── sub2api-4k-image-generator-ts/
+    ├── SKILL.md
+    ├── agents/
+    │   └── openai.yaml
+    ├── package.json
+    ├── package-lock.json
+    ├── tsconfig.json
+    ├── scripts/
+    │   ├── openai_4k_image_generator.ts # thin executable entrypoint
+    │   ├── cli.ts                       # command orchestration
+    │   ├── args.ts                      # CLI parsing and defaults
+    │   ├── env.ts                       # .env loading and key masking
+    │   ├── payload.ts                   # /images and /responses payload builders
+    │   ├── request.ts                   # JSON and SSE HTTP requests
+    │   ├── sse.ts                       # OpenAI image stream event parsing
+    │   ├── save.ts                      # final and partial image saving
+    │   ├── types.ts                     # shared types
+    │   ├── errors.ts                    # typed CLI errors
+    │   └── test.ts                      # local unit tests
+    └── dist/
+        └── openai_4k_image_generator.js
 ```
 
 ## Validate
+
+From a repository checkout, enter the skill directory first:
+
+```powershell
+cd .\sub2api-4k-image-generator-ts
+```
 
 Run the local test suite:
 
@@ -179,6 +191,7 @@ npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --list
 ## Development
 
 ```powershell
+cd .\sub2api-4k-image-generator-ts
 npm test
 npm run build
 ```

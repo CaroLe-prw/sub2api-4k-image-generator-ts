@@ -42,4 +42,4 @@ npx tsx .\scripts\openai_4k_image_generator.ts "test prompt" --dry-run
 - Streaming is enabled by default to avoid Cloudflare 524 during slow 4K generation.
 - `*-partial-XX.png` files are diagnostics only; final images are saved as `<prefix>-XX.png`.
 - Run `npm test` after editing the skill.
-- Detailed commands and architecture are in `README.md`.
+- The bundled `dist/` directory is enough for normal use; use `scripts/` only for development or debugging.
