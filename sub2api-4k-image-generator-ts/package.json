@@ -10,6 +10,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "tsx scripts/test.ts",
+    "setup": "node dist/openai_4k_image_generator.js --setup",
     "dry-run": "tsx scripts/openai_4k_image_generator.ts \"test prompt\" --dry-run"
   },
   "keywords": [

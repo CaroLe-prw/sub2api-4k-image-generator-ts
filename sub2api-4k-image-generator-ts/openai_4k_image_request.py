@@ -10,9 +10,39 @@ import urllib.error
 import urllib.request
 import mimetypes
 from pathlib import Path
-from dotenv import load_dotenv
 
-load_dotenv()
+try:  # python-dotenv is optional; the saved user config works without it.
+    from dotenv import load_dotenv
+except ImportError:  # pragma: no cover - depends on the local environment
+    load_dotenv = None
+
+if load_dotenv is not None:
+    load_dotenv()
+
+
+def _user_config_path() -> Path:
+    """Mirror scripts/config.ts so Node and Python share one saved credential file."""
+    xdg = os.environ.get("XDG_CONFIG_HOME", "").strip()
+    base = Path(xdg) if xdg else Path.home() / ".config"
+    return base / "sub2api-4k-image-generator" / "config.env"
+
+
+def _load_user_config() -> None:
+    path = _user_config_path()
+    if not path.is_file():
+        return
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+_load_user_config()
 
 size_options = [
     "256x256",
@@ -339,6 +369,8 @@ def main() -> int:
         return 2
 
     base_url = args.base_url.strip().rstrip("/")
+    if base_url.endswith("/v1"):
+        base_url = base_url[:-3]
     if args.endpoint == "images":
         url = f"{base_url}/v1/images/generations"
         payload = build_images_payload(args)

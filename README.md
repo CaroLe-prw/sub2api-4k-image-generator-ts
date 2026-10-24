@@ -20,6 +20,13 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image
 
 正确安装后，skill 目录里应该包含 `SKILL.md`、`dist/`、`scripts/` 和 `package.json`。如果你只看到 `SKILL.md`，说明安装到了旧的 root-level layout，请使用下面的更新命令刷新。
 
+安装完成后进入 skill 目录运行一次配置，按提示输入自己的 sub2api 域名和 key（详见下面的「CLI 设置」）：
+
+```bash
+cd ~/.agents/skills/sub2api-4k-image-generator-ts
+node dist/openai_4k_image_generator.js --setup
+```
+
 安装到所有检测到的 agent：
 
 ```bash
@@ -66,7 +73,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image
 
 这个 skill 会：
 
-- 检查本地 `.env` 或 process environment 中的 `SUB2API_BASE_URL` 和 `SUB2API_API_KEY`
+- 首次运行 `--setup` 交互式收集 `SUB2API_BASE_URL` 和 `SUB2API_API_KEY`，保存到用户级配置，重装 skill 不会丢失
 - 为 `3840x2160` 或 `2160x3840` 生成明确的 4K payload
 - 默认使用 streaming request，降低慢速 4K 任务遇到 Cloudflare 524 的概率
 - 从 SSE event 中捕获 final image 和 partial diagnostic image
@@ -75,7 +82,23 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image
 
 ## CLI 设置
 
-在运行 CLI 的目录创建或更新 `.env`：
+安装后只需运行一次配置命令，按提示输入 base URL 和 API key：
+
+```bash
+node dist/openai_4k_image_generator.js --setup
+```
+
+它会把凭据写入用户级配置（macOS/Linux `~/.config/sub2api-4k-image-generator/config.env`，Windows `%APPDATA%\sub2api-4k-image-generator\config.env`，遵循 `$XDG_CONFIG_HOME`），文件权限为 `600`。这个位置在 skill 目录之外，所以用 `--copy` 重装 skill 不会把它删掉。
+
+非交互环境（CI、脚本）可以直接传参：
+
+```bash
+node dist/openai_4k_image_generator.js --setup \
+  --base-url https://your-sub2api.example.com \
+  --api-key sk-...
+```
+
+也可以继续用项目级 `.env`，凭据优先级为：进程环境变量 → skill 目录下的 `.env` → 已保存的用户配置。
 
 ```env
 SUB2API_BASE_URL=https://your-sub2api.example.com
@@ -131,7 +154,7 @@ python .\openai_4k_image_request.py `
   --output-dir output
 ```
 
-这个脚本适合在不想进入 Node/TypeScript 工具链时，直接发起 sub2api/OpenAI-compatible 图片生成请求。它会读取 `.env` 中的 `SUB2API_BASE_URL`、`SUB2API_API_KEY` 和 `SUB2API_USER_AGENT`，默认使用 `gpt-image-2`、`3840x2160`、`stream=true` 和 `partial_images=1`。
+这个脚本适合在不想进入 Node/TypeScript 工具链时，直接发起 sub2api/OpenAI-compatible 图片生成请求。它会读取 `.env` 或 `--setup` 保存的用户级配置中的 `SUB2API_BASE_URL`、`SUB2API_API_KEY` 和 `SUB2API_USER_AGENT`，默认使用 `gpt-image-2`、`3840x2160`、`stream=true` 和 `partial_images=1`。
 
 Python 脚本支持：
 

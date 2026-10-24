@@ -20,6 +20,13 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image
 
 A correct install should create a skill directory containing `SKILL.md`, `dist/`, `scripts/`, and `package.json`. If you only see `SKILL.md`, you installed an older root-level layout; refresh with the update command below.
 
+After installing, run the setup once from the skill directory and enter your own sub2api domain and key (see "CLI Setup" below):
+
+```bash
+cd ~/.agents/skills/sub2api-4k-image-generator-ts
+node dist/openai_4k_image_generator.js --setup
+```
+
 Install for all detected agents:
 
 ```bash
@@ -66,7 +73,7 @@ Use $sub2api-4k-image-generator-ts to generate a 4K landscape image through my s
 
 The skill will:
 
-- inspect the local `.env` or process environment for `SUB2API_BASE_URL` and `SUB2API_API_KEY`
+- run `--setup` on first use to collect `SUB2API_BASE_URL` and `SUB2API_API_KEY` into a user-level config that survives reinstalls
 - generate explicit 4K payloads for `3840x2160` or `2160x3840`
 - prefer streaming requests so slow 4K jobs can avoid Cloudflare 524 failures
 - capture final images and partial diagnostic images from SSE events
@@ -75,7 +82,23 @@ The skill will:
 
 ## CLI Setup
 
-Create or update `.env` where you run the CLI:
+After installing, run the setup command once and follow the prompts:
+
+```bash
+node dist/openai_4k_image_generator.js --setup
+```
+
+It saves `SUB2API_BASE_URL` and `SUB2API_API_KEY` to the user-level config (`~/.config/sub2api-4k-image-generator/config.env`; `%APPDATA%\sub2api-4k-image-generator\config.env` on Windows; `$XDG_CONFIG_HOME` respected) with `600` permissions. That path is outside the skill directory, so `skills add --copy` reinstalls keep it.
+
+For non-interactive shells (CI, scripts), pass values directly:
+
+```bash
+node dist/openai_4k_image_generator.js --setup \
+  --base-url https://your-sub2api.example.com \
+  --api-key sk-...
+```
+
+A project `.env` still works. Precedence is: process environment → `.env` next to the skill → saved user config.
 
 ```env
 SUB2API_BASE_URL=https://your-sub2api.example.com

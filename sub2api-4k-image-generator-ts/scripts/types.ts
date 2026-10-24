@@ -23,6 +23,7 @@ export interface Options {
   prefix: string;
   stream: boolean;
   partialImages: number;
+  setup: boolean;
   dryRun: boolean;
   help: boolean;
 }

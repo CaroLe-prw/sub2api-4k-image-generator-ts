@@ -1,10 +1,12 @@
 import { argv } from "node:process";
 import { parseArgs, printHelp } from "./args.js";
+import { isInteractive, loadUserConfig, userConfigPath } from "./config.js";
 import { UsageError } from "./errors.js";
 import { loadDotEnv, maskApiKey } from "./env.js";
 import { buildImagesPayload, buildResponsesPayload } from "./payload.js";
 import { requestJson, requestStream } from "./request.js";
 import { responseSummary, saveImages, savePartialImages } from "./save.js";
+import { describeSavedSetup, runSetup } from "./setup.js";
 export function buildRequest(options) {
     const baseUrl = options.baseUrl.trim().replace(/\/+$/, "").replace(/\/v1$/, "");
     const endpoint = options.endpoint === "images" && options.inputImage ? "edits" : options.endpoint;
@@ -20,10 +22,30 @@ export function buildRequest(options) {
 }
 export async function run(rawArgs = argv.slice(2)) {
     loadDotEnv();
+    loadUserConfig();
     const options = parseArgs(rawArgs);
+    const flags = {
+        baseUrlProvided: rawArgs.includes("--base-url"),
+        apiKeyProvided: rawArgs.includes("--api-key"),
+    };
     if (options.help) {
         printHelp();
         return 0;
+    }
+    if (options.setup) {
+        const result = await runSetup(options, flags);
+        console.log(describeSavedSetup(result));
+        return 0;
+    }
+    if (!options.apiKey && !options.dryRun) {
+        if (!isInteractive()) {
+            throw new UsageError("Missing API key. Run `--setup`, set SUB2API_API_KEY, or pass --api-key. " +
+                `User config path: ${userConfigPath()}`);
+        }
+        const result = await runSetup(options, flags);
+        console.log(describeSavedSetup(result));
+        options.apiKey = result.credentials.apiKey;
+        options.baseUrl = result.credentials.baseUrl;
     }
     console.log(`sub2api URL: ${options.baseUrl.trim()}`);
     console.log(`API key: ${maskApiKey(options.apiKey)}`);

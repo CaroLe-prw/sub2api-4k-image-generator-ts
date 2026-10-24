@@ -57,6 +57,7 @@ export function defaultOptions() {
         prefix: "",
         stream: true,
         partialImages: 1,
+        setup: false,
         dryRun: false,
         help: false,
     };
@@ -149,6 +150,9 @@ export function parseArgs(rawArgs) {
                 options.partialImages = parseNumber(nextValue(args, i, arg), arg);
                 i += 1;
                 break;
+            case "--setup":
+                options.setup = true;
+                break;
             case "--dry-run":
                 options.dryRun = true;
                 break;
@@ -163,9 +167,12 @@ export function printHelp() {
 
 Usage:
   node dist/openai_4k_image_generator.js "prompt" [options]
+  node dist/openai_4k_image_generator.js --setup
   npx tsx scripts/openai_4k_image_generator.ts "prompt" [options]
 
 Options:
+  --setup                        Prompt for SUB2API_BASE_URL / SUB2API_API_KEY and save them
+                                 to the user config (survives skill reinstalls)
   --base-url URL                 Defaults to SUB2API_BASE_URL or http://127.0.0.1:8080
   --api-key KEY                  Defaults to SUB2API_API_KEY
   --endpoint images|edits|responses  Defaults to images; input image selects edits

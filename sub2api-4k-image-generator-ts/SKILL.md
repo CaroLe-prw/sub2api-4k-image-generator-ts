@@ -10,12 +10,14 @@ Use this skill when the user wants TypeScript/Node image generation or editing t
 ## Workflow
 
 1. Work from the skill root that contains this `SKILL.md`.
-2. Ensure `.env` or the process environment provides:
+2. Make sure credentials exist. If `SUB2API_BASE_URL` / `SUB2API_API_KEY` are not already available, run the setup command once and follow its prompts:
 
-```env
-SUB2API_BASE_URL=https://your-sub2api.example.com
-SUB2API_API_KEY=sk-...
+```bash
+node dist/openai_4k_image_generator.js --setup
 ```
+
+It writes `SUB2API_BASE_URL` and `SUB2API_API_KEY` to the user-level config
+(`~/.config/sub2api-4k-image-generator/config.env`, `%APPDATA%\sub2api-4k-image-generator\config.env` on Windows, `$XDG_CONFIG_HOME` respected). That file lives outside the skill directory, so `skills add --copy` reinstalls keep it. Non-interactive shells can pass `--setup --base-url URL --api-key KEY` instead. A project `.env` or process environment still takes precedence over the saved config.
 
 3. Prefer the compiled JS entrypoint for normal use:
 
@@ -63,7 +65,7 @@ node dist/openai_4k_image_generator.js \
 ## Notes
 
 - Replace `SUB2API_BASE_URL` with the user's own deployed sub2api domain.
-- The Node entrypoint accepts a base URL with or without a trailing `/v1`. Keep credentials in `.env` at the skill root or in the process environment; do not put real keys in skill files or examples.
+- The Node entrypoint accepts a base URL with or without a trailing `/v1`. Credentials resolve in this order: process environment, then a `.env` next to the skill, then the saved user config. Prefer `--setup` over hand-editing `.env`, because `skills add --copy` wipes files inside the skill directory; do not put real keys in skill files or examples.
 - Treat 4K as explicit pixel sizes: `3840x2160` or `2160x3840`.
 - Streaming is enabled by default to avoid Cloudflare 524 during slow 4K generation.
 - `*-partial-XX.png` files are diagnostics only; final images are saved as `<prefix>-XX.png`.

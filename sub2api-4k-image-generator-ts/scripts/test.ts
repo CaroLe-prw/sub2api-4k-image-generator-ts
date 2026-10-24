@@ -1,12 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { parseArgs } from "./args.js";
 import { buildRequest, run } from "./cli.js";
+import { userConfigPath } from "./config.js";
 import { maskApiKey } from "./env.js";
+import { runSetup } from "./setup.js";
 import { buildImagesPayload, buildResponsesPayload } from "./payload.js";
 import { emptyImageResponse, parseSSEText, SSEImageParser } from "./sse.js";
 import { iterB64Images, iterPartialB64Images, responseSummary } from "./save.js";
@@ -105,6 +107,122 @@ test("maskApiKey hides full secret", () => {
   assert.equal(maskApiKey("sk-1234567890abcdef"), "sk-123...cdef");
   assert.equal(maskApiKey("short"), "***");
 });
+
+test("user config path respects XDG_CONFIG_HOME and stays outside the skill", (t) => {
+  const dir = mkdtempSync(join(tmpdir(), "sub2api-config-"));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const previous = process.env.XDG_CONFIG_HOME;
+  process.env.XDG_CONFIG_HOME = dir;
+  t.after(() => {
+    if (previous === undefined) {
+      delete process.env.XDG_CONFIG_HOME;
+    } else {
+      process.env.XDG_CONFIG_HOME = previous;
+    }
+  });
+  assert.equal(userConfigPath(), join(dir, "sub2api-4k-image-generator", "config.env"));
+});
+
+test("setup saves credentials with owner-only permissions and no override of existing env", async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), "sub2api-setup-"));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const previousXdg = process.env.XDG_CONFIG_HOME;
+  const previousKey = process.env.SUB2API_API_KEY;
+  const previousUrl = process.env.SUB2API_BASE_URL;
+  process.env.XDG_CONFIG_HOME = dir;
+  delete process.env.SUB2API_API_KEY;
+  delete process.env.SUB2API_BASE_URL;
+  t.after(() => {
+    if (previousXdg === undefined) delete process.env.XDG_CONFIG_HOME;
+    else process.env.XDG_CONFIG_HOME = previousXdg;
+    if (previousKey === undefined) delete process.env.SUB2API_API_KEY;
+    else process.env.SUB2API_API_KEY = previousKey;
+    if (previousUrl === undefined) delete process.env.SUB2API_BASE_URL;
+    else process.env.SUB2API_BASE_URL = previousUrl;
+  });
+
+  assert.equal(
+    await run(["--setup", "--base-url", "https://sub2api.example.com/v1/", "--api-key", "sk-setup-123456789"]),
+    0,
+  );
+
+  const path = join(dir, "sub2api-4k-image-generator", "config.env");
+  const saved = readFileSync(path, "utf8");
+  assert.match(saved, /^SUB2API_BASE_URL=https:\/\/sub2api\.example\.com\/v1$/m);
+  assert.match(saved, /^SUB2API_API_KEY=sk-setup-123456789$/m);
+  assert.equal(statSync(path).mode & 0o777, 0o600);
+  assert.equal(process.env.SUB2API_API_KEY, "sk-setup-123456789");
+});
+
+test("setup rejects malformed values before writing config", async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), "sub2api-setup-bad-"));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const previousXdg = process.env.XDG_CONFIG_HOME;
+  process.env.XDG_CONFIG_HOME = dir;
+  t.after(() => {
+    if (previousXdg === undefined) delete process.env.XDG_CONFIG_HOME;
+    else process.env.XDG_CONFIG_HOME = previousXdg;
+  });
+
+  await assert.rejects(
+    () => run(["--setup", "--base-url", "ftp://example.com", "--api-key", "sk-x"]),
+    /无效的 SUB2API_BASE_URL/,
+  );
+  await assert.rejects(
+    () => run(["--setup", "--base-url", "https://example.com", "--api-key", "   "]),
+    /不能为空/,
+  );
+  assert.equal(existsSync(join(dir, "sub2api-4k-image-generator", "config.env")), false);
+});
+
+test("interactive setup prompts for both values and saves them", async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), "sub2api-setup-tty-"));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const previousXdg = process.env.XDG_CONFIG_HOME;
+  process.env.XDG_CONFIG_HOME = dir;
+  t.after(() => {
+    if (previousXdg === undefined) delete process.env.XDG_CONFIG_HOME;
+    else process.env.XDG_CONFIG_HOME = previousXdg;
+  });
+
+  const asked: string[] = [];
+  const result = await runSetup(
+    parseArgs([]),
+    { baseUrlProvided: false, apiKeyProvided: false },
+    {
+      interactive: true,
+      prompt: async (question, mask) => {
+        asked.push(`${mask ? "secret" : "text"}:${question.trim()}`);
+        return mask ? "sk-interactive-987654321" : "https://tty.example.com";
+      },
+    },
+  );
+
+  assert.equal(asked.length, 2);
+  assert.match(asked[0], /^text:SUB2API_BASE_URL/);
+  assert.match(asked[1], /^secret:SUB2API_API_KEY/);
+  assert.equal(result.credentials.baseUrl, "https://tty.example.com");
+  const saved = readFileSync(join(dir, "sub2api-4k-image-generator", "config.env"), "utf8");
+  assert.match(saved, /^SUB2API_API_KEY=sk-interactive-987654321$/m);
+});
+
+test("missing credentials fail fast in a non-interactive shell", async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), "sub2api-nocreds-"));
+  const skillDir = process.cwd();
+  t.after(() => {
+    process.chdir(skillDir);
+    rmSync(dir, { recursive: true, force: true });
+  });
+  const previous = process.env.SUB2API_API_KEY;
+  process.env.SUB2API_API_KEY = "";
+  t.after(() => {
+    if (previous === undefined) delete process.env.SUB2API_API_KEY;
+    else process.env.SUB2API_API_KEY = previous;
+  });
+  process.chdir(dir);
+  await assert.rejects(() => run(["draw a cat"]), /Missing API key/);
+});
+
 
 test("input image selects direct edits with the image model and normalized base URL", () => {
   for (const endpoint of [[], ["--endpoint", "images"], ["--endpoint", "edits"]]) {
