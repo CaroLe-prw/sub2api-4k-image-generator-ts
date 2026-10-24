@@ -8,7 +8,7 @@ import { parseArgs } from "./args.js";
 import { buildRequest, run } from "./cli.js";
 import { userConfigPath } from "./config.js";
 import { maskApiKey } from "./env.js";
-import { runSetup } from "./setup.js";
+import { looksLikeApiKey, runSetup } from "./setup.js";
 import { buildImagesPayload, buildResponsesPayload } from "./payload.js";
 import { emptyImageResponse, parseSSEText, SSEImageParser } from "./sse.js";
 import { iterB64Images, iterPartialB64Images, responseSummary } from "./save.js";
@@ -204,6 +204,43 @@ test("interactive setup prompts for both values and saves them", async (t) => {
   assert.equal(result.credentials.baseUrl, "https://tty.example.com");
   const saved = readFileSync(join(dir, "sub2api-4k-image-generator", "config.env"), "utf8");
   assert.match(saved, /^SUB2API_API_KEY=sk-interactive-987654321$/m);
+});
+
+test("looksLikeApiKey rejects short or whitespace-containing values", () => {
+  assert.equal(looksLikeApiKey("sk-1234567890abcdef"), true);
+  assert.equal(looksLikeApiKey("13112345"), false);
+  assert.equal(looksLikeApiKey("sk-short"), false);
+  assert.equal(looksLikeApiKey("sk-1234567890 abcdef"), false);
+});
+
+test("interactive setup refuses an implausible key unless confirmed", async (t) => {
+  const dir = mkdtempSync(join(tmpdir(), "sub2api-setup-short-"));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const previousXdg = process.env.XDG_CONFIG_HOME;
+  process.env.XDG_CONFIG_HOME = dir;
+  t.after(() => {
+    if (previousXdg === undefined) delete process.env.XDG_CONFIG_HOME;
+    else process.env.XDG_CONFIG_HOME = previousXdg;
+  });
+
+  const answers = ["https://short.example.com", "13112345", "n"];
+  const reject = runSetup(parseArgs([]), { baseUrlProvided: false, apiKeyProvided: false }, {
+    interactive: true,
+    prompt: async () => answers.shift() ?? "",
+  });
+  await assert.rejects(reject, /已取消保存/);
+  assert.equal(existsSync(join(dir, "sub2api-4k-image-generator", "config.env")), false);
+
+  const confirmAnswers = ["https://short.example.com", "13112345", "y"];
+  const saved = await runSetup(parseArgs([]), { baseUrlProvided: false, apiKeyProvided: false }, {
+    interactive: true,
+    prompt: async () => confirmAnswers.shift() ?? "",
+  });
+  assert.equal(saved.credentials.apiKey, "13112345");
+  assert.match(
+    readFileSync(join(dir, "sub2api-4k-image-generator", "config.env"), "utf8"),
+    /^SUB2API_API_KEY=13112345$/m,
+  );
 });
 
 test("missing credentials fail fast in a non-interactive shell", async (t) => {

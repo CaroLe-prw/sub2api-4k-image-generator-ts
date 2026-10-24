@@ -17,6 +17,11 @@ export function validateApiKey(raw) {
     }
     return value;
 }
+/** Keys are long, whitespace-free tokens; short values are almost always typos. */
+export function looksLikeApiKey(raw) {
+    const value = raw.trim();
+    return value.length >= 16 && !/\s/.test(value);
+}
 function readLine(question, mask, stream) {
     return new Promise((resolve, reject) => {
         stdout.write(question);
@@ -165,6 +170,19 @@ async function collectAndSave(options, flags, runtime) {
         baseUrl: validateBaseUrl(baseUrl),
         apiKey: validateApiKey(apiKey),
     };
+    if (!looksLikeApiKey(credentials.apiKey)) {
+        const message = `警告：这个值只有 ${credentials.apiKey.length} 个字符，看起来不像 API key（通常是 sk- 开头的长字符串）。`;
+        if (runtime.interactive) {
+            stdout.write(`${message}\n`);
+            const answer = await runtime.prompt("仍然保存？[y/N]: ", false);
+            if (!/^y(es)?$/i.test(answer.trim())) {
+                throw new UsageError("已取消保存。请重新运行 --setup 输入完整的 API key。");
+            }
+        }
+        else {
+            process.stderr.write(`${message} 仍会保存（非交互模式）。\n`);
+        }
+    }
     const values = {
         SUB2API_BASE_URL: credentials.baseUrl,
         SUB2API_API_KEY: credentials.apiKey,
