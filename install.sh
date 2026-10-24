@@ -87,10 +87,18 @@ fi
 
 echo
 if [ -n "${SUB2API_BASE_URL:-}" ] && [ -n "${SUB2API_API_KEY:-}" ]; then
-  node "$SKILL_DIR/dist/openai_4k_image_generator.js" --setup \
-    --base-url "$SUB2API_BASE_URL" --api-key "$SUB2API_API_KEY"
+  if ! node "$SKILL_DIR/dist/openai_4k_image_generator.js" --setup \
+      --base-url "$SUB2API_BASE_URL" --api-key "$SUB2API_API_KEY"; then
+    echo "Credential setup failed. Retry with:" >&2
+    echo "  node $SKILL_DIR/dist/openai_4k_image_generator.js --setup" >&2
+    exit 1
+  fi
 else
-  node "$SKILL_DIR/dist/openai_4k_image_generator.js" --setup
+  if ! node "$SKILL_DIR/dist/openai_4k_image_generator.js" --setup; then
+    echo "Credential setup skipped/failed. Retry with:" >&2
+    echo "  node $SKILL_DIR/dist/openai_4k_image_generator.js --setup" >&2
+    exit 1
+  fi
 fi
 
 echo
