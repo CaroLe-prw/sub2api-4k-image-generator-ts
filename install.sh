@@ -55,7 +55,12 @@ NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
 echo "Installing ${SKILL} from ${REPO} (${SCOPE})..."
 
 add_args=(add "$REPO" --skill "$SKILL" -a "$AGENT" -y --copy)
-[ "$SCOPE" = "global" ] && add_args+=(-g)
+if [ "$SCOPE" = "global" ]; then
+  add_args+=(-g)
+else
+  # skills auto-detects project scope, but only when the project has markers.
+  mkdir -p "$PWD/.agents/skills"
+fi
 npx -y skills@latest "${add_args[@]}"
 
 if [ "$SCOPE" = "global" ]; then
