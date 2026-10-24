@@ -4,7 +4,7 @@
 
 # sub2api 4K Image Generator TS Skill
 
-[![skills.sh](https://skills.sh/b/fengyunzaidushi/sub2api-4k-image-generator-ts)](https://skills.sh/fengyunzaidushi/sub2api-4k-image-generator-ts)
+[![skills.sh](https://skills.sh/b/CaroLe-prw/sub2api-4k-image-generator-ts)](https://skills.sh/CaroLe-prw/sub2api-4k-image-generator-ts)
 
 这是一个 Codex 可用的 agent skill，同时也是一个 TypeScript CLI，用来通过 sub2api 的 OpenAI-compatible endpoint 生成、流式接收、保存和调试高分辨率 AI 图片。
 
@@ -15,7 +15,7 @@
 只安装当前 skill 到 Codex：
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex
 ```
 
 正确安装后，skill 目录里应该包含 `SKILL.md`、`dist/`、`scripts/` 和 `package.json`。如果你只看到 `SKILL.md`，说明安装到了旧的 root-level layout，请使用下面的更新命令刷新。
@@ -23,19 +23,19 @@ npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-
 安装到所有检测到的 agent：
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts
 ```
 
 只查看仓库中可被检测到的 skill，不安装：
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --list
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
 ```
 
 不安装，直接生成使用该 skill 的 prompt：
 
 ```bash
-npx skills use fengyunzaidushi/sub2api-4k-image-generator-ts@sub2api-4k-image-generator-ts
+npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-4k-image-generator-ts
 ```
 
 ## 更新
@@ -43,13 +43,13 @@ npx skills use fengyunzaidushi/sub2api-4k-image-generator-ts@sub2api-4k-image-ge
 推荐刷新 Codex 安装：
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -y --copy
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -y --copy
 ```
 
 刷新所有检测到的 agent：
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts --all --copy
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts --all --copy
 ```
 
 为什么这里使用 `skills add` 而不是 `skills update`：
@@ -217,7 +217,7 @@ npm run build
 检查 `skills.sh` / `npx skills` 是否能检测到仓库中的 skill：
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --list
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
 ```
 
 ## 诊断

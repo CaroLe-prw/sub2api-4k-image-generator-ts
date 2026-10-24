@@ -4,7 +4,7 @@
 
 # sub2api 4K Image Generator TS Skill
 
-[![skills.sh](https://skills.sh/b/fengyunzaidushi/sub2api-4k-image-generator-ts)](https://skills.sh/fengyunzaidushi/sub2api-4k-image-generator-ts)
+[![skills.sh](https://skills.sh/b/CaroLe-prw/sub2api-4k-image-generator-ts)](https://skills.sh/CaroLe-prw/sub2api-4k-image-generator-ts)
 
 A Codex-compatible agent skill and TypeScript CLI for generating, streaming, saving, and debugging high-resolution AI images through a sub2api OpenAI-compatible endpoint.
 
@@ -15,7 +15,7 @@ Use it when you need a local `SUB2API_BASE_URL` / `SUB2API_API_KEY` based image 
 Install the current skill for Codex:
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex
 ```
 
 A correct install should create a skill directory containing `SKILL.md`, `dist/`, `scripts/`, and `package.json`. If you only see `SKILL.md`, you installed an older root-level layout; refresh with the update command below.
@@ -23,19 +23,19 @@ A correct install should create a skill directory containing `SKILL.md`, `dist/`
 Install for all detected agents:
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts
 ```
 
 List the skill detected in this repository without installing it:
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --list
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
 ```
 
 Use the skill prompt without installing:
 
 ```bash
-npx skills use fengyunzaidushi/sub2api-4k-image-generator-ts@sub2api-4k-image-generator-ts
+npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-4k-image-generator-ts
 ```
 
 ## Update
@@ -43,13 +43,13 @@ npx skills use fengyunzaidushi/sub2api-4k-image-generator-ts@sub2api-4k-image-ge
 Recommended way to refresh the Codex install:
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -y --copy
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -y --copy
 ```
 
 Refresh all detected agents:
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts --all --copy
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts --all --copy
 ```
 
 Why this uses `skills add` instead of `skills update`:
@@ -217,7 +217,7 @@ npm run build
 Check `skills.sh` / `npx skills` repository detection:
 
 ```bash
-npx skills add fengyunzaidushi/sub2api-4k-image-generator-ts --list
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
 ```
 
 ## Diagnostics

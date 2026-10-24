@@ -3,3 +3,4 @@ node_modules/
 output/
 *.png
 *-partial-*.png
+.DS_Store
