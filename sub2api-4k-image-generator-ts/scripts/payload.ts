@@ -43,6 +43,9 @@ export function buildImagesPayload(options: Options): Record<string, unknown> {
     payload.stream = true;
     payload.partial_images = options.partialImages;
   }
+  if (options.inputImage) {
+    payload.images = [{ image_url: imageReference(options.inputImage) }];
+  }
   return payload;
 }
 

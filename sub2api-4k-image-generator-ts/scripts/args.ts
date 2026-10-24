@@ -100,7 +100,7 @@ export function parseArgs(rawArgs: string[]): Options {
         i += 1;
         break;
       case "--endpoint":
-        options.endpoint = parseChoice<Endpoint>(nextValue(args, i, arg), ["images", "responses"], arg);
+        options.endpoint = parseChoice<Endpoint>(nextValue(args, i, arg), ["images", "edits", "responses"], arg);
         i += 1;
         break;
       case "--image-model":
@@ -176,16 +176,16 @@ export function printHelp(): void {
   console.log(`sub2api-4k-image-request-ts
 
 Usage:
-  node dist/openai_4k_image_request.js "prompt" [options]
-  npx tsx scripts/openai_4k_image_request.ts "prompt" [options]
+  node dist/openai_4k_image_generator.js "prompt" [options]
+  npx tsx scripts/openai_4k_image_generator.ts "prompt" [options]
 
 Options:
   --base-url URL                 Defaults to SUB2API_BASE_URL or http://127.0.0.1:8080
   --api-key KEY                  Defaults to SUB2API_API_KEY
-  --endpoint images|responses    Defaults to images
+  --endpoint images|edits|responses  Defaults to images; input image selects edits
   --image-model MODEL            Defaults to gpt-image-2
   --responses-model MODEL        Defaults to gpt-5.4-mini
-  --input-image PATH_OR_URL      Only with --endpoint responses
+  --input-image PATH_OR_URL      Edit a local image, URL, or data URL; required for edits
   --size WIDTHxHEIGHT            Defaults to 3840x2160
   --quality QUALITY              Defaults to high
   --n NUMBER                     Defaults to 1

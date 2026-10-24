@@ -20,7 +20,7 @@ export function extractEventImages(
     throw new RequestFailed(`stream error: ${JSON.stringify(event)}`);
   }
 
-  if (eventType === "image_generation.partial_image") {
+  if (eventType === "image_generation.partial_image" || eventType === "image_edit.partial_image") {
     const index = Number(event.partial_image_index || 0);
     console.error(`partial image received: index=${index}`);
     const b64 = typeof event.b64_json === "string" ? event.b64_json : "";
@@ -31,7 +31,7 @@ export function extractEventImages(
     return;
   }
 
-  if (eventType === "image_generation.completed") {
+  if (eventType === "image_generation.completed" || eventType === "image_edit.completed") {
     const b64 = typeof event.b64_json === "string" ? event.b64_json : "";
     if (b64) {
       response.data ??= [];

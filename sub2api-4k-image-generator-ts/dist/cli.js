@@ -6,10 +6,16 @@ import { buildImagesPayload, buildResponsesPayload } from "./payload.js";
 import { requestJson, requestStream } from "./request.js";
 import { responseSummary, saveImages, savePartialImages } from "./save.js";
 export function buildRequest(options) {
-    const baseUrl = options.baseUrl.trim().replace(/\/+$/, "");
+    const baseUrl = options.baseUrl.trim().replace(/\/+$/, "").replace(/\/v1$/, "");
+    const endpoint = options.endpoint === "images" && options.inputImage ? "edits" : options.endpoint;
+    if (endpoint === "edits" && !options.inputImage) {
+        throw new UsageError("--input-image is required with --endpoint edits");
+    }
     return {
-        url: options.endpoint === "images" ? `${baseUrl}/v1/images/generations` : `${baseUrl}/v1/responses`,
-        payload: options.endpoint === "images" ? buildImagesPayload(options) : buildResponsesPayload(options),
+        url: endpoint === "responses"
+            ? `${baseUrl}/v1/responses`
+            : `${baseUrl}/v1/images/${endpoint === "edits" ? "edits" : "generations"}`,
+        payload: endpoint === "responses" ? buildResponsesPayload(options) : buildImagesPayload(options),
     };
 }
 export async function run(rawArgs = argv.slice(2)) {
@@ -26,9 +32,6 @@ export async function run(rawArgs = argv.slice(2)) {
     }
     if (options.n <= 0) {
         throw new UsageError("--n must be greater than 0");
-    }
-    if (options.inputImage && options.endpoint !== "responses") {
-        throw new UsageError("--input-image is only supported with --endpoint responses");
     }
     const { url, payload } = buildRequest(options);
     if (options.dryRun) {
@@ -50,7 +53,7 @@ export async function run(rawArgs = argv.slice(2)) {
     const imageResponse = response;
     const partialCount = savePartialImages(imageResponse, options.outputDir, prefix);
     if (imageResponse._stream_incomplete) {
-        console.error("Stream ended before the final image_generation.completed event. " +
+        console.error("Stream ended before the final image completion event. " +
             "Saved partial images only; they are not the final 4K result.");
     }
     console.error(JSON.stringify(responseSummary(imageResponse), null, 2));

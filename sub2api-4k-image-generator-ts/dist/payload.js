@@ -37,6 +37,9 @@ export function buildImagesPayload(options) {
         payload.stream = true;
         payload.partial_images = options.partialImages;
     }
+    if (options.inputImage) {
+        payload.images = [{ image_url: imageReference(options.inputImage) }];
+    }
     return payload;
 }
 export function buildResponsesPayload(options) {

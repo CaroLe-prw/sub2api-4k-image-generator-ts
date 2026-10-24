@@ -1,4 +1,4 @@
-export type Endpoint = "images" | "responses";
+export type Endpoint = "images" | "edits" | "responses";
 export type OutputFormat = "png" | "jpeg" | "webp";
 export type Background = "" | "auto" | "transparent" | "opaque";
 export type Moderation = "" | "auto" | "low";
