@@ -61,7 +61,8 @@ else
   # skills auto-detects project scope, but only when the project has markers.
   mkdir -p "$PWD/.agents/skills"
 fi
-npx -y skills@latest "${add_args[@]}"
+# </dev/null: when the script itself arrives through stdin, keep npx from eating the rest of it.
+npx -y skills@latest "${add_args[@]}" </dev/null
 
 if [ "$SCOPE" = "global" ]; then
   SKILL_DIR="${SKILLS_HOME:-$HOME/.agents}/skills/$SKILL"
@@ -88,13 +89,13 @@ fi
 echo
 if [ -n "${SUB2API_BASE_URL:-}" ] && [ -n "${SUB2API_API_KEY:-}" ]; then
   if ! node "$SKILL_DIR/dist/openai_4k_image_generator.js" --setup \
-      --base-url "$SUB2API_BASE_URL" --api-key "$SUB2API_API_KEY"; then
+      --base-url "$SUB2API_BASE_URL" --api-key "$SUB2API_API_KEY" </dev/null; then
     echo "Credential setup failed. Retry with:" >&2
     echo "  node $SKILL_DIR/dist/openai_4k_image_generator.js --setup" >&2
     exit 1
   fi
 else
-  if ! node "$SKILL_DIR/dist/openai_4k_image_generator.js" --setup; then
+  if ! node "$SKILL_DIR/dist/openai_4k_image_generator.js" --setup </dev/null; then
     echo "Credential setup skipped/failed. Retry with:" >&2
     echo "  node $SKILL_DIR/dist/openai_4k_image_generator.js --setup" >&2
     exit 1
