@@ -81,11 +81,20 @@ fi
 CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}"
 CONFIG_PATH="$CONFIG_ROOT/sub2api-image/config.env"
 LEGACY_CONFIG_PATH="$CONFIG_ROOT/sub2api-4k-image-generator/config.env"
-if { [ -f "$CONFIG_PATH" ] || [ -f "$LEGACY_CONFIG_PATH" ]; } && [ "$FORCE_SETUP" != "1" ]; then
-  echo
-  echo "Credentials already saved at $([ -f "$CONFIG_PATH" ] && echo "$CONFIG_PATH" || echo "$LEGACY_CONFIG_PATH")"
-  echo "Re-run with --force to change them."
-  exit 0
+# A file alone is not enough: a base-URL-only config (e.g. after a rename) still
+# needs the API key, so only skip the prompt when a non-empty key is present.
+has_api_key() {
+  [ -f "$1" ] && grep -Eq '^[[:space:]]*SUB2API_API_KEY=[^[:space:]]+' "$1"
+}
+if [ "$FORCE_SETUP" != "1" ]; then
+  for candidate in "$CONFIG_PATH" "$LEGACY_CONFIG_PATH"; do
+    if has_api_key "$candidate"; then
+      echo
+      echo "Credentials already saved at $candidate"
+      echo "Re-run with --force to change them."
+      exit 0
+    fi
+  done
 fi
 
 echo
