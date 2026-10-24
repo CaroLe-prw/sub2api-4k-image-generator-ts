@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Install the sub2api 4K image skill and ask for credentials in one step.
 #
-#   curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-image/main/install.sh | bash
 #
 # Flags:
 #   --project            install into ./.agents/skills instead of the user-level skill dir
 #   --agent NAME         agent to install for (default: codex)
-#   --repo OWNER/REPO    source repository (default: CaroLe-prw/sub2api-4k-image-generator-ts)
+#   --repo OWNER/REPO    source repository (default: CaroLe-prw/sub2api-image)
 #   --force              ask for credentials even when a config already exists
 #   --no-setup           skip the credential prompt
 #   -h, --help           show this help
@@ -19,7 +19,7 @@
 #   SUB2API_BASE_URL, SUB2API_API_KEY
 set -euo pipefail
 
-REPO="${SUB2API_SKILL_REPO:-CaroLe-prw/sub2api-4k-image-generator-ts}"
+REPO="${SUB2API_SKILL_REPO:-CaroLe-prw/sub2api-image}"
 SKILL="sub2api-image"
 AGENT="${SUB2API_SKILL_AGENT:-codex}"
 SCOPE="${SUB2API_SKILL_SCOPE:-global}"

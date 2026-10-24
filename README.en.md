@@ -4,7 +4,7 @@
 
 # sub2api-image
 
-[![skills.sh](https://skills.sh/b/CaroLe-prw/sub2api-4k-image-generator-ts)](https://skills.sh/CaroLe-prw/sub2api-4k-image-generator-ts)
+[![skills.sh](https://skills.sh/b/CaroLe-prw/sub2api-image)](https://skills.sh/CaroLe-prw/sub2api-image)
 
 A Codex-compatible agent skill and TypeScript CLI for generating, streaming, saving, and debugging high-resolution AI images through a sub2api OpenAI-compatible endpoint.
 
@@ -15,7 +15,7 @@ Use it when you need a local `SUB2API_BASE_URL` / `SUB2API_API_KEY` based image 
 Recommended: install and get prompted for the base URL and API key right away, saved to the user-level config:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-image/main/install.sh | bash
 ```
 
 Options: `--project` (install into the current project instead of user-level), `--agent codex`, `--force` (re-enter credentials), `--no-setup` (install only).
@@ -23,7 +23,7 @@ Options: `--project` (install into the current project instead of user-level), `
 When piping, pass flags with `bash -s --`; plain `| bash -- --force` makes bash treat `--force` as a script path:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash -s -- --force
+curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-image/main/install.sh | bash -s -- --force
 ```
 
 Or use the equivalent environment variables: `SUB2API_SKILL_SCOPE`, `SUB2API_SKILL_AGENT`, `SUB2API_SKILL_REPO`, `SUB2API_FORCE_SETUP=1`, `SUB2API_RUN_SETUP=0`. For CI, set `SUB2API_BASE_URL` / `SUB2API_API_KEY` to skip the prompt.
@@ -31,7 +31,7 @@ Or use the equivalent environment variables: `SUB2API_SKILL_SCOPE`, `SUB2API_SKI
 The equivalent without the script:
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex -g -y --copy \
+npx skills add CaroLe-prw/sub2api-image --skill sub2api-image -a codex -g -y --copy \
   && node ~/.agents/skills/sub2api-image/dist/openai_4k_image_generator.js --setup
 ```
 
@@ -40,7 +40,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a
 Install the current skill for Codex (without configuring credentials):
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex
+npx skills add CaroLe-prw/sub2api-image --skill sub2api-image -a codex
 ```
 
 A correct install should create a skill directory containing `SKILL.md`, `dist/`, `scripts/`, and `package.json`. If you only see `SKILL.md`, you installed an older root-level layout; refresh with the update command below.
@@ -55,19 +55,19 @@ node dist/openai_4k_image_generator.js --setup
 Install for all detected agents:
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image
+npx skills add CaroLe-prw/sub2api-image --skill sub2api-image
 ```
 
 List the skill detected in this repository without installing it:
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
+npx skills add CaroLe-prw/sub2api-image --list
 ```
 
 Use the skill prompt without installing:
 
 ```bash
-npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-image
+npx skills use CaroLe-prw/sub2api-image@sub2api-image
 ```
 
 ## Update
@@ -75,13 +75,13 @@ npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-image
 Recommended way to refresh the Codex install:
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex -y --copy
+npx skills add CaroLe-prw/sub2api-image --skill sub2api-image -a codex -y --copy
 ```
 
 Refresh all detected agents:
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image --all --copy
+npx skills add CaroLe-prw/sub2api-image --skill sub2api-image --all --copy
 ```
 
 Why this uses `skills add` instead of `skills update`:
@@ -266,7 +266,7 @@ npm run build
 Check `skills.sh` / `npx skills` repository detection:
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
+npx skills add CaroLe-prw/sub2api-image --list
 ```
 
 ## Diagnostics

@@ -4,7 +4,7 @@
 
 # sub2api-image
 
-[![skills.sh](https://skills.sh/b/CaroLe-prw/sub2api-4k-image-generator-ts)](https://skills.sh/CaroLe-prw/sub2api-4k-image-generator-ts)
+[![skills.sh](https://skills.sh/b/CaroLe-prw/sub2api-image)](https://skills.sh/CaroLe-prw/sub2api-image)
 
 这是一个 Codex 可用的 agent skill，同时也是一个 TypeScript CLI，用来通过 sub2api 的 OpenAI-compatible endpoint 生成、流式接收、保存和调试高分辨率 AI 图片。
 
@@ -15,7 +15,7 @@
 推荐这条命令，装完立刻提示你输入 base URL 和 API key，并保存到用户级配置：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-image/main/install.sh | bash
 ```
 
 可选参数：`--project`（装到当前项目而不是用户级）、`--agent codex`、`--force`（已有配置时重新输入）、`--no-setup`（只装不配置）。
@@ -23,7 +23,7 @@ curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generat
 通过管道传参数时必须用 `bash -s --`，直接 `| bash -- --force` 会把 `--force` 当成脚本文件名：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash -s -- --force
+curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-image/main/install.sh | bash -s -- --force
 ```
 
 嫌麻烦就用环境变量，和参数等价：`SUB2API_SKILL_SCOPE`、`SUB2API_SKILL_AGENT`、`SUB2API_SKILL_REPO`、`SUB2API_FORCE_SETUP=1`、`SUB2API_RUN_SETUP=0`。CI 里可以用 `SUB2API_BASE_URL=... SUB2API_API_KEY=...` 跳过交互。
@@ -31,7 +31,7 @@ curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generat
 不想用脚本的话，复合命令等价：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex -g -y --copy \
+npx skills add CaroLe-prw/sub2api-image --skill sub2api-image -a codex -g -y --copy \
   && node ~/.agents/skills/sub2api-image/dist/openai_4k_image_generator.js --setup
 ```
 
@@ -40,7 +40,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a
 只安装当前 skill 到 Codex（不配置凭据）：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex
+npx skills add CaroLe-prw/sub2api-image --skill sub2api-image -a codex
 ```
 
 正确安装后，skill 目录里应该包含 `SKILL.md`、`dist/`、`scripts/` 和 `package.json`。如果你只看到 `SKILL.md`，说明安装到了旧的 root-level layout，请使用下面的更新命令刷新。
@@ -55,19 +55,19 @@ node dist/openai_4k_image_generator.js --setup
 安装到所有检测到的 agent：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image
+npx skills add CaroLe-prw/sub2api-image --skill sub2api-image
 ```
 
 只查看仓库中可被检测到的 skill，不安装：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
+npx skills add CaroLe-prw/sub2api-image --list
 ```
 
 不安装，直接生成使用该 skill 的 prompt：
 
 ```bash
-npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-image
+npx skills use CaroLe-prw/sub2api-image@sub2api-image
 ```
 
 ## 更新
@@ -75,13 +75,13 @@ npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-image
 推荐刷新 Codex 安装：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex -y --copy
+npx skills add CaroLe-prw/sub2api-image --skill sub2api-image -a codex -y --copy
 ```
 
 刷新所有检测到的 agent：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image --all --copy
+npx skills add CaroLe-prw/sub2api-image --skill sub2api-image --all --copy
 ```
 
 为什么这里使用 `skills add` 而不是 `skills update`：
@@ -268,7 +268,7 @@ npm run build
 检查 `skills.sh` / `npx skills` 是否能检测到仓库中的 skill：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
+npx skills add CaroLe-prw/sub2api-image --list
 ```
 
 ## 诊断
