@@ -120,7 +120,7 @@ test("user config path respects XDG_CONFIG_HOME and stays outside the skill", (t
       process.env.XDG_CONFIG_HOME = previous;
     }
   });
-  assert.equal(userConfigPath(), join(dir, "sub2api-4k-image-generator", "config.env"));
+  assert.equal(userConfigPath(), join(dir, "sub2api-image", "config.env"));
 });
 
 test("setup saves credentials with owner-only permissions and no override of existing env", async (t) => {
@@ -146,7 +146,7 @@ test("setup saves credentials with owner-only permissions and no override of exi
     0,
   );
 
-  const path = join(dir, "sub2api-4k-image-generator", "config.env");
+  const path = join(dir, "sub2api-image", "config.env");
   const saved = readFileSync(path, "utf8");
   assert.match(saved, /^SUB2API_BASE_URL=https:\/\/sub2api\.example\.com\/v1$/m);
   assert.match(saved, /^SUB2API_API_KEY=sk-setup-123456789$/m);
@@ -172,7 +172,7 @@ test("setup rejects malformed values before writing config", async (t) => {
     () => run(["--setup", "--base-url", "https://example.com", "--api-key", "   "]),
     /不能为空/,
   );
-  assert.equal(existsSync(join(dir, "sub2api-4k-image-generator", "config.env")), false);
+  assert.equal(existsSync(join(dir, "sub2api-image", "config.env")), false);
 });
 
 test("interactive setup prompts for both values and saves them", async (t) => {
@@ -202,7 +202,7 @@ test("interactive setup prompts for both values and saves them", async (t) => {
   assert.match(asked[0], /^text:SUB2API_BASE_URL/);
   assert.match(asked[1], /^secret:SUB2API_API_KEY/);
   assert.equal(result.credentials.baseUrl, "https://tty.example.com");
-  const saved = readFileSync(join(dir, "sub2api-4k-image-generator", "config.env"), "utf8");
+  const saved = readFileSync(join(dir, "sub2api-image", "config.env"), "utf8");
   assert.match(saved, /^SUB2API_API_KEY=sk-interactive-987654321$/m);
 });
 
@@ -229,7 +229,7 @@ test("interactive setup refuses an implausible key unless confirmed", async (t) 
     prompt: async () => answers.shift() ?? "",
   });
   await assert.rejects(reject, /已取消保存/);
-  assert.equal(existsSync(join(dir, "sub2api-4k-image-generator", "config.env")), false);
+  assert.equal(existsSync(join(dir, "sub2api-image", "config.env")), false);
 
   const confirmAnswers = ["https://short.example.com", "13112345", "y"];
   const saved = await runSetup(parseArgs([]), { baseUrlProvided: false, apiKeyProvided: false }, {
@@ -238,7 +238,7 @@ test("interactive setup refuses an implausible key unless confirmed", async (t) 
   });
   assert.equal(saved.credentials.apiKey, "13112345");
   assert.match(
-    readFileSync(join(dir, "sub2api-4k-image-generator", "config.env"), "utf8"),
+    readFileSync(join(dir, "sub2api-image", "config.env"), "utf8"),
     /^SUB2API_API_KEY=13112345$/m,
   );
 });

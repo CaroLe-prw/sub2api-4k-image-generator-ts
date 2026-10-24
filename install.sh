@@ -20,7 +20,7 @@
 set -euo pipefail
 
 REPO="${SUB2API_SKILL_REPO:-CaroLe-prw/sub2api-4k-image-generator-ts}"
-SKILL="sub2api-4k-image-generator-ts"
+SKILL="sub2api-image"
 AGENT="${SUB2API_SKILL_AGENT:-codex}"
 SCOPE="${SUB2API_SKILL_SCOPE:-global}"
 FORCE_SETUP="${SUB2API_FORCE_SETUP:-0}"
@@ -78,10 +78,12 @@ fi
 
 [ "$RUN_SETUP" = "1" ] || { echo "Skipped credential setup (--no-setup)."; exit 0; }
 
-CONFIG_PATH="${XDG_CONFIG_HOME:-$HOME/.config}/sub2api-4k-image-generator/config.env"
-if [ -f "$CONFIG_PATH" ] && [ "$FORCE_SETUP" != "1" ]; then
+CONFIG_ROOT="${XDG_CONFIG_HOME:-$HOME/.config}"
+CONFIG_PATH="$CONFIG_ROOT/sub2api-image/config.env"
+LEGACY_CONFIG_PATH="$CONFIG_ROOT/sub2api-4k-image-generator/config.env"
+if { [ -f "$CONFIG_PATH" ] || [ -f "$LEGACY_CONFIG_PATH" ]; } && [ "$FORCE_SETUP" != "1" ]; then
   echo
-  echo "Credentials already saved at $CONFIG_PATH"
+  echo "Credentials already saved at $([ -f "$CONFIG_PATH" ] && echo "$CONFIG_PATH" || echo "$LEGACY_CONFIG_PATH")"
   echo "Re-run with --force to change them."
   exit 0
 fi

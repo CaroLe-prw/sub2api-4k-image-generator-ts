@@ -3,7 +3,9 @@ import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { env, platform } from "node:process";
 
-export const CONFIG_DIR_NAME = "sub2api-4k-image-generator";
+export const CONFIG_DIR_NAME = "sub2api-image";
+/** Previous name; still read so a rename does not lose saved credentials. */
+export const LEGACY_CONFIG_DIR_NAME = "sub2api-4k-image-generator";
 export const CONFIG_FILE_NAME = "config.env";
 
 export function userConfigDir(): string {
@@ -18,6 +20,10 @@ export function userConfigDir(): string {
 
 export function userConfigPath(): string {
   return join(userConfigDir(), CONFIG_FILE_NAME);
+}
+
+export function legacyConfigPath(): string {
+  return join(dirname(userConfigDir()), LEGACY_CONFIG_DIR_NAME, CONFIG_FILE_NAME);
 }
 
 export function readConfig(path = userConfigPath()): Record<string, string> {
@@ -53,9 +59,11 @@ export function readConfig(path = userConfigPath()): Record<string, string> {
  * process environment or a project-level `.env` file.
  */
 export function loadUserConfig(path = userConfigPath()): void {
-  for (const [key, value] of Object.entries(readConfig(path))) {
-    if (env[key] === undefined) {
-      env[key] = value;
+  for (const candidate of [path, legacyConfigPath()]) {
+    for (const [key, value] of Object.entries(readConfig(candidate))) {
+      if (env[key] === undefined) {
+        env[key] = value;
+      }
     }
   }
 }

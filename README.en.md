@@ -2,7 +2,7 @@
   <a href="README.md"><img alt="中文 README" src="https://img.shields.io/badge/%E4%B8%AD%E6%96%87-README-blue"></a>
 </p>
 
-# sub2api 4K Image Generator TS Skill
+# sub2api-image
 
 [![skills.sh](https://skills.sh/b/CaroLe-prw/sub2api-4k-image-generator-ts)](https://skills.sh/CaroLe-prw/sub2api-4k-image-generator-ts)
 
@@ -31,8 +31,8 @@ Or use the equivalent environment variables: `SUB2API_SKILL_SCOPE`, `SUB2API_SKI
 The equivalent without the script:
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -g -y --copy \
-  && node ~/.agents/skills/sub2api-4k-image-generator-ts/dist/openai_4k_image_generator.js --setup
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex -g -y --copy \
+  && node ~/.agents/skills/sub2api-image/dist/openai_4k_image_generator.js --setup
 ```
 
 ## Install
@@ -40,7 +40,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image
 Install the current skill for Codex (without configuring credentials):
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex
 ```
 
 A correct install should create a skill directory containing `SKILL.md`, `dist/`, `scripts/`, and `package.json`. If you only see `SKILL.md`, you installed an older root-level layout; refresh with the update command below.
@@ -48,14 +48,14 @@ A correct install should create a skill directory containing `SKILL.md`, `dist/`
 You can also configure credentials separately after installing (see "CLI Setup" below):
 
 ```bash
-cd ~/.agents/skills/sub2api-4k-image-generator-ts
+cd ~/.agents/skills/sub2api-image
 node dist/openai_4k_image_generator.js --setup
 ```
 
 Install for all detected agents:
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image
 ```
 
 List the skill detected in this repository without installing it:
@@ -67,7 +67,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
 Use the skill prompt without installing:
 
 ```bash
-npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-4k-image-generator-ts
+npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-image
 ```
 
 ## Update
@@ -75,25 +75,25 @@ npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-4k-image-generat
 Recommended way to refresh the Codex install:
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -y --copy
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex -y --copy
 ```
 
 Refresh all detected agents:
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts --all --copy
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image --all --copy
 ```
 
 Why this uses `skills add` instead of `skills update`:
 
-`npx skills update sub2api-4k-image-generator-ts -p -y` may fail with `Failed to check for deleted skills` or `Failed to update`. In that case, run the recommended `skills add ... -y --copy` command above to overwrite the installed copy with the latest repository version.
+`npx skills update sub2api-image -p -y` may fail with `Failed to check for deleted skills` or `Failed to update`. In that case, run the recommended `skills add ... -y --copy` command above to overwrite the installed copy with the latest repository version.
 
 ## Use
 
 Example prompt after installation:
 
 ```text
-Use $sub2api-4k-image-generator-ts to generate a 4K landscape image through my sub2api endpoint and save the final image path.
+Use $sub2api-image to generate a 4K landscape image through my sub2api endpoint and save the final image path.
 ```
 
 The skill will:
@@ -113,7 +113,7 @@ After installing, run the setup command once and follow the prompts:
 node dist/openai_4k_image_generator.js --setup
 ```
 
-It saves `SUB2API_BASE_URL` and `SUB2API_API_KEY` to the user-level config (`~/.config/sub2api-4k-image-generator/config.env`; `%APPDATA%\sub2api-4k-image-generator\config.env` on Windows; `$XDG_CONFIG_HOME` respected) with `600` permissions. That path is outside the skill directory, so `skills add --copy` reinstalls keep it.
+It saves `SUB2API_BASE_URL` and `SUB2API_API_KEY` to the user-level config (`~/.config/sub2api-image/config.env`; `%APPDATA%\sub2api-image\config.env` on Windows; `$XDG_CONFIG_HOME` respected) with `600` permissions. That path is outside the skill directory, so `skills add --copy` reinstalls keep it.
 
 For non-interactive shells (CI, scripts), pass values directly:
 
@@ -135,7 +135,7 @@ Replace `https://your-sub2api.example.com` with your own deployed sub2api domain
 Install dependencies for development:
 
 ```powershell
-cd .\sub2api-4k-image-generator-ts
+cd .\sub2api-image
 npm install
 ```
 
@@ -219,7 +219,7 @@ python .\openai_4k_image_request.py "test prompt" --dry-run
 ├── README.en.md
 ├── install.sh                # one-command install + interactive setup
 ├── LICENSE
-└── sub2api-4k-image-generator-ts/
+└── sub2api-image/
     ├── SKILL.md
     ├── agents/
     │   └── openai.yaml
@@ -248,7 +248,7 @@ python .\openai_4k_image_request.py "test prompt" --dry-run
 From a repository checkout, enter the skill directory first:
 
 ```powershell
-cd .\sub2api-4k-image-generator-ts
+cd .\sub2api-image
 ```
 
 Run the local test suite:
@@ -280,7 +280,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
 ## Development
 
 ```powershell
-cd .\sub2api-4k-image-generator-ts
+cd .\sub2api-image
 npm test
 npm run build
 ```

@@ -1,9 +1,9 @@
 ---
-name: sub2api-4k-image-generator-ts
+name: sub2api-image
 description: Generate, edit, and debug high-resolution images through sub2api using TypeScript/Node. Use for sub2api image generation or editing, 4K output, streaming Images or Responses APIs, Cloudflare 524 diagnostics, and partial image capture.
 ---
 
-# sub2api 4K Image Generator TS
+# sub2api-image
 
 Use this skill when the user wants TypeScript/Node image generation or editing through sub2api rather than Codex's built-in image tool.
 
@@ -17,7 +17,7 @@ node dist/openai_4k_image_generator.js --setup
 ```
 
 It writes `SUB2API_BASE_URL` and `SUB2API_API_KEY` to the user-level config
-(`~/.config/sub2api-4k-image-generator/config.env`, `%APPDATA%\sub2api-4k-image-generator\config.env` on Windows, `$XDG_CONFIG_HOME` respected). That file lives outside the skill directory, so `skills add --copy` reinstalls keep it. Non-interactive shells can pass `--setup --base-url URL --api-key KEY` instead. A project `.env` or process environment still takes precedence over the saved config.
+(`~/.config/sub2api-image/config.env`, `%APPDATA%\sub2api-image\config.env` on Windows, `$XDG_CONFIG_HOME` respected). That file lives outside the skill directory, so `skills add --copy` reinstalls keep it. Non-interactive shells can pass `--setup --base-url URL --api-key KEY` instead. A project `.env` or process environment still takes precedence over the saved config.
 
 3. Prefer the compiled JS entrypoint for normal use:
 

@@ -2,7 +2,7 @@
   <a href="README.en.md"><img alt="English README" src="https://img.shields.io/badge/English-README-blue"></a>
 </p>
 
-# sub2api 4K Image Generator TS Skill
+# sub2api-image
 
 [![skills.sh](https://skills.sh/b/CaroLe-prw/sub2api-4k-image-generator-ts)](https://skills.sh/CaroLe-prw/sub2api-4k-image-generator-ts)
 
@@ -31,8 +31,8 @@ curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generat
 不想用脚本的话，复合命令等价：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -g -y --copy \
-  && node ~/.agents/skills/sub2api-4k-image-generator-ts/dist/openai_4k_image_generator.js --setup
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex -g -y --copy \
+  && node ~/.agents/skills/sub2api-image/dist/openai_4k_image_generator.js --setup
 ```
 
 ## 安装
@@ -40,7 +40,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image
 只安装当前 skill 到 Codex（不配置凭据）：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex
 ```
 
 正确安装后，skill 目录里应该包含 `SKILL.md`、`dist/`、`scripts/` 和 `package.json`。如果你只看到 `SKILL.md`，说明安装到了旧的 root-level layout，请使用下面的更新命令刷新。
@@ -48,14 +48,14 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image
 装完单独跑一次配置也可以（详见下面的「CLI 设置」）：
 
 ```bash
-cd ~/.agents/skills/sub2api-4k-image-generator-ts
+cd ~/.agents/skills/sub2api-image
 node dist/openai_4k_image_generator.js --setup
 ```
 
 安装到所有检测到的 agent：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image
 ```
 
 只查看仓库中可被检测到的 skill，不安装：
@@ -67,7 +67,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
 不安装，直接生成使用该 skill 的 prompt：
 
 ```bash
-npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-4k-image-generator-ts
+npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-image
 ```
 
 ## 更新
@@ -75,25 +75,25 @@ npx skills use CaroLe-prw/sub2api-4k-image-generator-ts@sub2api-4k-image-generat
 推荐刷新 Codex 安装：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -y --copy
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image -a codex -y --copy
 ```
 
 刷新所有检测到的 agent：
 
 ```bash
-npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts --all --copy
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-image --all --copy
 ```
 
 为什么这里使用 `skills add` 而不是 `skills update`：
 
-`npx skills update sub2api-4k-image-generator-ts -p -y` 可能会出现 `Failed to check for deleted skills` 或 `Failed to update`。遇到这种情况时，使用上面的 `skills add ... -y --copy` 命令覆盖刷新到仓库最新版本。
+`npx skills update sub2api-image -p -y` 可能会出现 `Failed to check for deleted skills` 或 `Failed to update`。遇到这种情况时，使用上面的 `skills add ... -y --copy` 命令覆盖刷新到仓库最新版本。
 
 ## 使用
 
 安装后的示例提示词：
 
 ```text
-使用 $sub2api-4k-image-generator-ts 通过我的 sub2api endpoint 生成一张 4K 横图，并返回最终保存的图片路径。
+使用 $sub2api-image 通过我的 sub2api endpoint 生成一张 4K 横图，并返回最终保存的图片路径。
 ```
 
 这个 skill 会：
@@ -113,7 +113,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image
 node dist/openai_4k_image_generator.js --setup
 ```
 
-它会把凭据写入用户级配置（macOS/Linux `~/.config/sub2api-4k-image-generator/config.env`，Windows `%APPDATA%\sub2api-4k-image-generator\config.env`，遵循 `$XDG_CONFIG_HOME`），文件权限为 `600`。这个位置在 skill 目录之外，所以用 `--copy` 重装 skill 不会把它删掉。
+它会把凭据写入用户级配置（macOS/Linux `~/.config/sub2api-image/config.env`，Windows `%APPDATA%\sub2api-image\config.env`，遵循 `$XDG_CONFIG_HOME`），文件权限为 `600`。这个位置在 skill 目录之外，所以用 `--copy` 重装 skill 不会把它删掉。
 
 非交互环境（CI、脚本）可以直接传参：
 
@@ -135,7 +135,7 @@ SUB2API_API_KEY=sk-...
 开发时安装依赖：
 
 ```powershell
-cd .\sub2api-4k-image-generator-ts
+cd .\sub2api-image
 npm install
 ```
 
@@ -219,7 +219,7 @@ python .\openai_4k_image_request.py "test prompt" --dry-run
 ├── README.en.md
 ├── install.sh                # 一条命令安装 + 交互式配置
 ├── LICENSE
-└── sub2api-4k-image-generator-ts/
+└── sub2api-image/
     ├── SKILL.md
     ├── agents/
     │   └── openai.yaml
@@ -250,7 +250,7 @@ python .\openai_4k_image_request.py "test prompt" --dry-run
 从仓库 checkout 中先进入 skill 目录：
 
 ```powershell
-cd .\sub2api-4k-image-generator-ts
+cd .\sub2api-image
 ```
 
 运行本地测试：
@@ -282,7 +282,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --list
 ## 开发
 
 ```powershell
-cd .\sub2api-4k-image-generator-ts
+cd .\sub2api-image
 npm test
 npm run build
 ```

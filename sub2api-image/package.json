@@ -1,11 +1,11 @@
 {
-  "name": "sub2api-4k-image-generator-ts",
+  "name": "sub2api-image",
   "version": "0.1.0",
   "description": "TypeScript Codex skill and CLI for 4K image generation through sub2api OpenAI-compatible endpoints.",
   "private": true,
   "type": "module",
   "bin": {
-    "sub2api-4k-image-generator": "./dist/openai_4k_image_generator.js"
+    "sub2api-image": "./dist/openai_4k_image_generator.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
