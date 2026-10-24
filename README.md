@@ -18,7 +18,15 @@
 curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash
 ```
 
-可选参数：`--project`（装到当前项目而不是用户级）、`--agent codex`、`--force`（已有配置时重新输入）、`--no-setup`（只装不配置）。CI 里可以用环境变量跳过交互：`SUB2API_BASE_URL=... SUB2API_API_KEY=... ... | bash`。
+可选参数：`--project`（装到当前项目而不是用户级）、`--agent codex`、`--force`（已有配置时重新输入）、`--no-setup`（只装不配置）。
+
+通过管道传参数时必须用 `bash -s --`，直接 `| bash -- --force` 会把 `--force` 当成脚本文件名：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash -s -- --force
+```
+
+嫌麻烦就用环境变量，和参数等价：`SUB2API_SKILL_SCOPE`、`SUB2API_SKILL_AGENT`、`SUB2API_SKILL_REPO`、`SUB2API_FORCE_SETUP=1`、`SUB2API_RUN_SETUP=0`。CI 里可以用 `SUB2API_BASE_URL=... SUB2API_API_KEY=...` 跳过交互。
 
 不想用脚本的话，复合命令等价：
 

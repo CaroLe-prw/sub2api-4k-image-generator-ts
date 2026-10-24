@@ -11,18 +11,26 @@
 #   --no-setup           skip the credential prompt
 #   -h, --help           show this help
 #
-# Environment (skips the prompt, useful for CI):
+# Environment (same effect as the flags, useful with `curl ... | bash`):
+#   SUB2API_SKILL_SCOPE=global|project   SUB2API_SKILL_AGENT=codex
+#   SUB2API_SKILL_REPO=owner/repo        SUB2API_FORCE_SETUP=1   SUB2API_RUN_SETUP=0
+#
+# Environment (skips the credential prompt, useful for CI):
 #   SUB2API_BASE_URL, SUB2API_API_KEY
 set -euo pipefail
 
-REPO="CaroLe-prw/sub2api-4k-image-generator-ts"
+REPO="${SUB2API_SKILL_REPO:-CaroLe-prw/sub2api-4k-image-generator-ts}"
 SKILL="sub2api-4k-image-generator-ts"
-AGENT="codex"
-SCOPE="global"
-FORCE_SETUP=0
-RUN_SETUP=1
+AGENT="${SUB2API_SKILL_AGENT:-codex}"
+SCOPE="${SUB2API_SKILL_SCOPE:-global}"
+FORCE_SETUP="${SUB2API_FORCE_SETUP:-0}"
+RUN_SETUP="${SUB2API_RUN_SETUP:-1}"
 
-usage() { sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; }
+usage() {
+  sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//'
+  echo
+  echo "Passing flags through a pipe: bash -s -- --force   (plain 'bash -- --force' fails)"
+}
 
 while [ $# -gt 0 ]; do
   case "$1" in

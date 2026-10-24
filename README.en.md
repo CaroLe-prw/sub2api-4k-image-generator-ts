@@ -18,7 +18,15 @@ Recommended: install and get prompted for the base URL and API key right away, s
 curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash
 ```
 
-Options: `--project` (install into the current project instead of user-level), `--agent codex`, `--force` (re-enter credentials), `--no-setup` (install only). For CI, set `SUB2API_BASE_URL` / `SUB2API_API_KEY` to skip the prompt.
+Options: `--project` (install into the current project instead of user-level), `--agent codex`, `--force` (re-enter credentials), `--no-setup` (install only).
+
+When piping, pass flags with `bash -s --`; plain `| bash -- --force` makes bash treat `--force` as a script path:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash -s -- --force
+```
+
+Or use the equivalent environment variables: `SUB2API_SKILL_SCOPE`, `SUB2API_SKILL_AGENT`, `SUB2API_SKILL_REPO`, `SUB2API_FORCE_SETUP=1`, `SUB2API_RUN_SETUP=0`. For CI, set `SUB2API_BASE_URL` / `SUB2API_API_KEY` to skip the prompt.
 
 The equivalent without the script:
 
