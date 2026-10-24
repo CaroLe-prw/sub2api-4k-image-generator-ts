@@ -10,9 +10,26 @@ A Codex-compatible agent skill and TypeScript CLI for generating, streaming, sav
 
 Use it when you need a local `SUB2API_BASE_URL` / `SUB2API_API_KEY` based image workflow for `/v1/images/generations` or `/v1/responses`, especially 4K outputs such as `3840x2160` and `2160x3840`, streaming partial-image diagnostics, and Cloudflare 524 timeout troubleshooting.
 
+## One-command install (asks for env during install)
+
+Recommended: install and get prompted for the base URL and API key right away, saved to the user-level config:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash
+```
+
+Options: `--project` (install into the current project instead of user-level), `--agent codex`, `--force` (re-enter credentials), `--no-setup` (install only). For CI, set `SUB2API_BASE_URL` / `SUB2API_API_KEY` to skip the prompt.
+
+The equivalent without the script:
+
+```bash
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -g -y --copy \
+  && node ~/.agents/skills/sub2api-4k-image-generator-ts/dist/openai_4k_image_generator.js --setup
+```
+
 ## Install
 
-Install the current skill for Codex:
+Install the current skill for Codex (without configuring credentials):
 
 ```bash
 npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex
@@ -20,7 +37,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image
 
 A correct install should create a skill directory containing `SKILL.md`, `dist/`, `scripts/`, and `package.json`. If you only see `SKILL.md`, you installed an older root-level layout; refresh with the update command below.
 
-After installing, run the setup once from the skill directory and enter your own sub2api domain and key (see "CLI Setup" below):
+You can also configure credentials separately after installing (see "CLI Setup" below):
 
 ```bash
 cd ~/.agents/skills/sub2api-4k-image-generator-ts
@@ -192,6 +209,7 @@ python .\openai_4k_image_request.py "test prompt" --dry-run
 .
 ├── README.md
 ├── README.en.md
+├── install.sh                # one-command install + interactive setup
 ├── LICENSE
 └── sub2api-4k-image-generator-ts/
     ├── SKILL.md

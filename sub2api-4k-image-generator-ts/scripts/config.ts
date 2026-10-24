@@ -71,10 +71,6 @@ export function saveUserConfig(values: Record<string, string>, path = userConfig
   return path;
 }
 
-export function isInteractive(): boolean {
-  return Boolean(process.stdin.isTTY);
-}
-
 /** Set the saved values on the current process so the same run can continue. */
 export function applyConfig(values: Record<string, string>): void {
   for (const [key, value] of Object.entries(values)) {

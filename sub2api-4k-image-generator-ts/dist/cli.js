@@ -1,12 +1,12 @@
 import { argv } from "node:process";
 import { parseArgs, printHelp } from "./args.js";
-import { isInteractive, loadUserConfig, userConfigPath } from "./config.js";
+import { loadUserConfig, userConfigPath } from "./config.js";
 import { UsageError } from "./errors.js";
 import { loadDotEnv, maskApiKey } from "./env.js";
 import { buildImagesPayload, buildResponsesPayload } from "./payload.js";
 import { requestJson, requestStream } from "./request.js";
 import { responseSummary, saveImages, savePartialImages } from "./save.js";
-import { describeSavedSetup, runSetup } from "./setup.js";
+import { describeSavedSetup, hasTerminal, runSetup } from "./setup.js";
 export function buildRequest(options) {
     const baseUrl = options.baseUrl.trim().replace(/\/+$/, "").replace(/\/v1$/, "");
     const endpoint = options.endpoint === "images" && options.inputImage ? "edits" : options.endpoint;
@@ -38,7 +38,7 @@ export async function run(rawArgs = argv.slice(2)) {
         return 0;
     }
     if (!options.apiKey && !options.dryRun) {
-        if (!isInteractive()) {
+        if (!hasTerminal()) {
             throw new UsageError("Missing API key. Run `--setup`, set SUB2API_API_KEY, or pass --api-key. " +
                 `User config path: ${userConfigPath()}`);
         }

@@ -1,13 +1,13 @@
 import { argv } from "node:process";
 
 import { parseArgs, printHelp } from "./args.js";
-import { isInteractive, loadUserConfig, userConfigPath } from "./config.js";
+import { loadUserConfig, userConfigPath } from "./config.js";
 import { UsageError } from "./errors.js";
 import { loadDotEnv, maskApiKey } from "./env.js";
 import { buildImagesPayload, buildResponsesPayload } from "./payload.js";
 import { requestJson, requestStream } from "./request.js";
 import { responseSummary, saveImages, savePartialImages } from "./save.js";
-import { describeSavedSetup, runSetup } from "./setup.js";
+import { describeSavedSetup, hasTerminal, runSetup } from "./setup.js";
 import type { ImageResponse, Options } from "./types.js";
 
 export function buildRequest(options: Options): { url: string; payload: Record<string, unknown> } {
@@ -44,7 +44,7 @@ export async function run(rawArgs = argv.slice(2)): Promise<number> {
   }
 
   if (!options.apiKey && !options.dryRun) {
-    if (!isInteractive()) {
+    if (!hasTerminal()) {
       throw new UsageError(
         "Missing API key. Run `--setup`, set SUB2API_API_KEY, or pass --api-key. " +
           `User config path: ${userConfigPath()}`,

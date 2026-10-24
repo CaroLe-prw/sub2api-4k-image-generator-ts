@@ -1,7 +1,8 @@
-import { existsSync, readFileSync } from "node:fs";
-import { stdin, stdout } from "node:process";
+import { closeSync, existsSync, openSync, readFileSync } from "node:fs";
+import { platform, stdout } from "node:process";
+import { ReadStream } from "node:tty";
 
-import { applyConfig, isInteractive, saveUserConfig, userConfigPath } from "./config.js";
+import { applyConfig, saveUserConfig, userConfigPath } from "./config.js";
 import { UsageError } from "./errors.js";
 import type { Options } from "./types.js";
 
@@ -31,18 +32,18 @@ export function validateApiKey(raw: string): string {
   return value;
 }
 
-function readLine(question: string, mask: boolean): Promise<string> {
+function readLine(question: string, mask: boolean, stream: ReadStream): Promise<string> {
   return new Promise((resolve, reject) => {
     stdout.write(question);
-    stdin.setRawMode(true);
-    stdin.resume();
-    stdin.setEncoding("utf8");
+    stream.setRawMode(true);
+    stream.resume();
+    stream.setEncoding("utf8");
     let value = "";
 
     const cleanup = () => {
-      stdin.setRawMode(false);
-      stdin.pause();
-      stdin.off("data", onData);
+      stream.setRawMode(false);
+      stream.pause();
+      stream.off("data", onData);
     };
 
     const onData = (chunk: string) => {
@@ -74,20 +75,81 @@ function readLine(question: string, mask: boolean): Promise<string> {
       }
     };
 
-    stdin.on("data", onData);
+    stream.on("data", onData);
   });
 }
 
 /** Injectable prompt so the interactive path can be tested without a TTY. */
 export type PromptFn = (question: string, mask: boolean) => Promise<string>;
 
+export interface Terminal {
+  stream: ReadStream;
+  close(): void;
+}
+
+/**
+ * Prefer the real stdin when it is a TTY. When the CLI is launched from a pipe
+ * (`curl ... | bash`), fall back to the controlling terminal so the prompt still works.
+ */
+export function openTerminal(): Terminal | null {
+  if (process.stdin.isTTY) {
+    return { stream: process.stdin, close: () => {} };
+  }
+  const candidates = platform === "win32" ? ["CONIN$"] : ["/dev/tty"];
+  for (const path of candidates) {
+    let fd: number | undefined;
+    try {
+      fd = openSync(path, "r");
+      const stream = new ReadStream(fd);
+      const close = () => {
+        try {
+          stream.destroy();
+        } catch {}
+        try {
+          closeSync(fd as number);
+        } catch {}
+      };
+      return { stream, close };
+    } catch {
+      if (fd !== undefined) {
+        try {
+          closeSync(fd);
+        } catch {}
+      }
+    }
+  }
+  return null;
+}
+
 export interface SetupRuntime {
   interactive: boolean;
   prompt: PromptFn;
+  dispose?: () => void;
 }
 
-function defaultRuntime(): SetupRuntime {
-  return { interactive: isInteractive(), prompt: readLine };
+/** Open a terminal-backed runtime; the caller owns disposal. */
+export function createRuntime(): SetupRuntime {
+  const terminal = openTerminal();
+  if (!terminal) {
+    return {
+      interactive: false,
+      prompt: () => Promise.reject(new UsageError("当前没有可用的终端，无法交互式输入")),
+    };
+  }
+  return {
+    interactive: true,
+    prompt: (question, mask) => readLine(question, mask, terminal.stream),
+    dispose: terminal.close,
+  };
+}
+
+export function hasTerminal(): boolean {
+  const terminal = openTerminal();
+  if (!terminal) {
+    return false;
+  }
+  terminal.close();
+  return true;
 }
 
 /**
@@ -97,7 +159,19 @@ function defaultRuntime(): SetupRuntime {
 export async function runSetup(
   options: Options,
   flags: SetupFlags = { baseUrlProvided: false, apiKeyProvided: false },
-  runtime: SetupRuntime = defaultRuntime(),
+  runtime: SetupRuntime = createRuntime(),
+): Promise<{ credentials: Credentials; path: string }> {
+  try {
+    return await collectAndSave(options, flags, runtime);
+  } finally {
+    runtime.dispose?.();
+  }
+}
+
+async function collectAndSave(
+  options: Options,
+  flags: SetupFlags,
+  runtime: SetupRuntime,
 ): Promise<{ credentials: Credentials; path: string }> {
   let baseUrl = flags.baseUrlProvided ? options.baseUrl.trim() : "";
   let apiKey = flags.apiKeyProvided ? options.apiKey.trim() : "";
@@ -124,8 +198,11 @@ export async function runSetup(
   }
   if (!baseUrl || !apiKey) {
     throw new UsageError(
-      "缺少凭据。交互式终端请运行 `--setup` 按提示输入；非交互环境请使用 " +
-        "`--setup --base-url https://your-sub2api.example.com --api-key sk-...`。",
+      runtime.interactive
+        ? "缺少凭据。请按提示输入，或使用 `--setup --base-url https://your-sub2api.example.com --api-key sk-...`。"
+        : "当前没有可用的交互终端，无法提示输入。请使用 " +
+            "`--setup --base-url https://your-sub2api.example.com --api-key sk-...`，" +
+            "或先导出 SUB2API_BASE_URL / SUB2API_API_KEY。",
     );
   }
 

@@ -1,6 +1,7 @@
-import { existsSync, readFileSync } from "node:fs";
-import { stdin, stdout } from "node:process";
-import { applyConfig, isInteractive, saveUserConfig, userConfigPath } from "./config.js";
+import { closeSync, existsSync, openSync, readFileSync } from "node:fs";
+import { platform, stdout } from "node:process";
+import { ReadStream } from "node:tty";
+import { applyConfig, saveUserConfig, userConfigPath } from "./config.js";
 import { UsageError } from "./errors.js";
 export function validateBaseUrl(raw) {
     const value = raw.trim().replace(/\/+$/, "");
@@ -16,17 +17,17 @@ export function validateApiKey(raw) {
     }
     return value;
 }
-function readLine(question, mask) {
+function readLine(question, mask, stream) {
     return new Promise((resolve, reject) => {
         stdout.write(question);
-        stdin.setRawMode(true);
-        stdin.resume();
-        stdin.setEncoding("utf8");
+        stream.setRawMode(true);
+        stream.resume();
+        stream.setEncoding("utf8");
         let value = "";
         const cleanup = () => {
-            stdin.setRawMode(false);
-            stdin.pause();
-            stdin.off("data", onData);
+            stream.setRawMode(false);
+            stream.pause();
+            stream.off("data", onData);
         };
         const onData = (chunk) => {
             for (const char of chunk) {
@@ -56,17 +57,82 @@ function readLine(question, mask) {
                 stdout.write(mask ? "*" : char);
             }
         };
-        stdin.on("data", onData);
+        stream.on("data", onData);
     });
 }
-function defaultRuntime() {
-    return { interactive: isInteractive(), prompt: readLine };
+/**
+ * Prefer the real stdin when it is a TTY. When the CLI is launched from a pipe
+ * (`curl ... | bash`), fall back to the controlling terminal so the prompt still works.
+ */
+export function openTerminal() {
+    if (process.stdin.isTTY) {
+        return { stream: process.stdin, close: () => { } };
+    }
+    const candidates = platform === "win32" ? ["CONIN$"] : ["/dev/tty"];
+    for (const path of candidates) {
+        let fd;
+        try {
+            fd = openSync(path, "r");
+            const stream = new ReadStream(fd);
+            const close = () => {
+                try {
+                    stream.destroy();
+                }
+                catch { }
+                try {
+                    closeSync(fd);
+                }
+                catch { }
+            };
+            return { stream, close };
+        }
+        catch {
+            if (fd !== undefined) {
+                try {
+                    closeSync(fd);
+                }
+                catch { }
+            }
+        }
+    }
+    return null;
+}
+/** Open a terminal-backed runtime; the caller owns disposal. */
+export function createRuntime() {
+    const terminal = openTerminal();
+    if (!terminal) {
+        return {
+            interactive: false,
+            prompt: () => Promise.reject(new UsageError("当前没有可用的终端，无法交互式输入")),
+        };
+    }
+    return {
+        interactive: true,
+        prompt: (question, mask) => readLine(question, mask, terminal.stream),
+        dispose: terminal.close,
+    };
+}
+export function hasTerminal() {
+    const terminal = openTerminal();
+    if (!terminal) {
+        return false;
+    }
+    terminal.close();
+    return true;
 }
 /**
  * Collect credentials from flags/env, or prompt for them when running in a TTY,
  * then persist to the user-level config so `skills add --copy` cannot wipe them.
  */
-export async function runSetup(options, flags = { baseUrlProvided: false, apiKeyProvided: false }, runtime = defaultRuntime()) {
+export async function runSetup(options, flags = { baseUrlProvided: false, apiKeyProvided: false }, runtime = createRuntime()) {
+    try {
+        return await collectAndSave(options, flags, runtime);
+    }
+    finally {
+        runtime.dispose?.();
+    }
+}
+async function collectAndSave(options, flags, runtime) {
     let baseUrl = flags.baseUrlProvided ? options.baseUrl.trim() : "";
     let apiKey = flags.apiKeyProvided ? options.apiKey.trim() : "";
     if (runtime.interactive && (!baseUrl || !apiKey)) {
@@ -89,8 +155,11 @@ export async function runSetup(options, flags = { baseUrlProvided: false, apiKey
         throw new UsageError("SUB2API_API_KEY 不能为空");
     }
     if (!baseUrl || !apiKey) {
-        throw new UsageError("缺少凭据。交互式终端请运行 `--setup` 按提示输入；非交互环境请使用 " +
-            "`--setup --base-url https://your-sub2api.example.com --api-key sk-...`。");
+        throw new UsageError(runtime.interactive
+            ? "缺少凭据。请按提示输入，或使用 `--setup --base-url https://your-sub2api.example.com --api-key sk-...`。"
+            : "当前没有可用的交互终端，无法提示输入。请使用 " +
+                "`--setup --base-url https://your-sub2api.example.com --api-key sk-...`，" +
+                "或先导出 SUB2API_BASE_URL / SUB2API_API_KEY。");
     }
     const credentials = {
         baseUrl: validateBaseUrl(baseUrl),

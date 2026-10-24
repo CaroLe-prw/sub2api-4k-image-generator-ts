@@ -10,9 +10,26 @@
 
 当你需要基于本地 `SUB2API_BASE_URL` / `SUB2API_API_KEY` 调用 `/v1/images/generations` 或 `/v1/responses` 时可以使用它，尤其适合 `3840x2160`、`2160x3840` 这类 4K 输出、streaming partial-image 诊断，以及 Cloudflare 524 timeout 排查。
 
+## 一键安装（安装时直接输入 env）
+
+推荐这条命令，装完立刻提示你输入 base URL 和 API key，并保存到用户级配置：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/CaroLe-prw/sub2api-4k-image-generator-ts/main/install.sh | bash
+```
+
+可选参数：`--project`（装到当前项目而不是用户级）、`--agent codex`、`--force`（已有配置时重新输入）、`--no-setup`（只装不配置）。CI 里可以用环境变量跳过交互：`SUB2API_BASE_URL=... SUB2API_API_KEY=... ... | bash`。
+
+不想用脚本的话，复合命令等价：
+
+```bash
+npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex -g -y --copy \
+  && node ~/.agents/skills/sub2api-4k-image-generator-ts/dist/openai_4k_image_generator.js --setup
+```
+
 ## 安装
 
-只安装当前 skill 到 Codex：
+只安装当前 skill 到 Codex（不配置凭据）：
 
 ```bash
 npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image-generator-ts -a codex
@@ -20,7 +37,7 @@ npx skills add CaroLe-prw/sub2api-4k-image-generator-ts --skill sub2api-4k-image
 
 正确安装后，skill 目录里应该包含 `SKILL.md`、`dist/`、`scripts/` 和 `package.json`。如果你只看到 `SKILL.md`，说明安装到了旧的 root-level layout，请使用下面的更新命令刷新。
 
-安装完成后进入 skill 目录运行一次配置，按提示输入自己的 sub2api 域名和 key（详见下面的「CLI 设置」）：
+装完单独跑一次配置也可以（详见下面的「CLI 设置」）：
 
 ```bash
 cd ~/.agents/skills/sub2api-4k-image-generator-ts
@@ -192,6 +209,7 @@ python .\openai_4k_image_request.py "test prompt" --dry-run
 .
 ├── README.md
 ├── README.en.md
+├── install.sh                # 一条命令安装 + 交互式配置
 ├── LICENSE
 └── sub2api-4k-image-generator-ts/
     ├── SKILL.md
@@ -209,6 +227,8 @@ python .\openai_4k_image_request.py "test prompt" --dry-run
     │   ├── payload.ts                   # /images and /responses payload builders
     │   ├── request.ts                   # JSON and SSE HTTP requests
     │   ├── sse.ts                       # OpenAI image stream event parsing
+    │   ├── setup.ts                     # --setup 交互式凭据收集与保存
+    │   ├── config.ts                    # 用户级配置路径与读写
     │   ├── save.ts                      # final and partial image saving
     │   ├── types.ts                     # shared types
     │   ├── errors.ts                    # typed CLI errors

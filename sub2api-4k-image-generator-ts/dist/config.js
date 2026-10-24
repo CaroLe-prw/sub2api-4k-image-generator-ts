@@ -60,9 +60,6 @@ export function saveUserConfig(values, path = userConfigPath()) {
     chmodSync(path, 0o600);
     return path;
 }
-export function isInteractive() {
-    return Boolean(process.stdin.isTTY);
-}
 /** Set the saved values on the current process so the same run can continue. */
 export function applyConfig(values) {
     for (const [key, value] of Object.entries(values)) {
